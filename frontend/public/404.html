@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="refresh" content="0; url=./" />
+    <meta charset="utf-8" />
+    <title>Redirecting…</title>
+    <script>
+      // Single Page App GitHub Pages redirect to the site root preserving path
+      (function () {
+        var l = window.location;
+        // Compute repo base path if present: /<user>.github.io/<repo>/...
+        var parts = l.pathname.split('/').filter(Boolean);
+        var basePath = parts.length > 0 ? '/' + parts[0] + '/' : '/';
+        var target = basePath + '?redirect=' + encodeURIComponent(l.pathname + l.search + l.hash);
+        l.replace(target);
+      })();
+    </script>
+  </head>
+  <body>Redirecting…</body>
+</html>

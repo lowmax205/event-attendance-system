@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@contexts/*": [
+        "./src/contexts/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ],
+      "@styles/*": [
+        "./src/styles/*"
+      ]
+    },
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "es2022",
+    "allowJs": true,
+    "checkJs": false,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
+}
