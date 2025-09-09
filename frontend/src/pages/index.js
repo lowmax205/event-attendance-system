@@ -1,0 +1,9 @@
+export { default as Dashboard } from './dashboard/DashboardPage.jsx';
+export { default as Management } from './management/ManagementPage.jsx';
+export { default as Analytics } from './analytics/AnalyticsPage.jsx';
+export { default as DataLibrary } from './data-library/DataLibraryPage.jsx';
+export { default as Report } from './reports/ReportPage.jsx';
+export { default as Settings } from './settings/SettingPage.jsx';
+export { default as Help } from './fqa/HelpPage.jsx';
+export { default as Profile } from './profile/ProfilePage.jsx';
+export { default as StatusPage } from './error/StatusPage.jsx';

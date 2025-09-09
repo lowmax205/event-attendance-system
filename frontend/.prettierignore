@@ -1,0 +1,6 @@
+dist
+node_modules
+*.lock
+coverage
+*.min.js
+*.min.css

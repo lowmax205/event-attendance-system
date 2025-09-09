@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting…</title>
+    <meta name="robots" content="noindex" />
+    <script>
+      (function () {
+        // Build the path + query + hash the user tried to access
+        var l = window.location;
+        var path = l.pathname || '/';
+        var search = l.search || '';
+        var hash = l.hash || '';
+        var full = path + search + hash;
+
+        // Redirect to the SPA entry with a redirect param
+        var dest = '/?redirect=' + encodeURIComponent(full);
+        // Replace so back button behaves
+        l.replace(dest);
+      })();
+    </script>
+    <noscript>
+      <meta http-equiv="refresh" content="0; url=/?redirect=%2F" />
+    </noscript>
+  </head>
+  <body>
+    Redirecting…
+  </body>
+</html>
