@@ -1,4 +1,17 @@
-import { AlertCircle, BarChart3, Calendar, CheckCircle, Clock, Edit, Eye, FileText, MapPin, Plus, QrCode, Users } from 'lucide-react';
+import {
+  AlertCircle,
+  BarChart3,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Edit,
+  Eye,
+  FileText,
+  MapPin,
+  Plus,
+  QrCode,
+  Users,
+} from 'lucide-react';
 import React from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +23,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDashboardData } from '@/contexts/dashboard-data-context';
 
 const OrganizerStats = () => {
-  const { events, attendances, eventsLoading, attendancesLoading, eventsError, attendancesError } = useDashboardData();
+  const { events, attendances, eventsLoading, attendancesLoading, eventsError, attendancesError } =
+    useDashboardData();
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [stats, setStats] = React.useState(null);
@@ -27,7 +41,9 @@ const OrganizerStats = () => {
     const eventsOrganized = evts.length;
     const active = evts.filter((e) => e.is_active).length;
     const totalAttendees = recs.length;
-    const attended = recs.filter((r) => ['checked_in', 'checked_out', 'present'].includes(r.status)).length;
+    const attended = recs.filter((r) =>
+      ['checked_in', 'checked_out', 'present'].includes(r.status),
+    ).length;
     const avgRate = recs.length ? Math.round((attended / recs.length) * 100) : null;
     setStats({ eventsOrganized, active, totalAttendees, avgRate });
   }, [events, attendances, eventsLoading, attendancesLoading, eventsError, attendancesError]);
@@ -61,10 +77,30 @@ const OrganizerStats = () => {
   }
 
   const cards = [
-    { title: 'Events Organized', value: stats?.eventsOrganized ?? 'N/A', icon: Calendar, description: 'Total events created' },
-    { title: 'Total Attendees', value: stats?.totalAttendees ?? 'N/A', icon: Users, description: 'Across all events' },
-    { title: 'Avg Attendance Rate', value: stats?.avgRate !== null ? `${stats.avgRate}%` : 'N/A', icon: CheckCircle, description: 'Attendance vs total records' },
-    { title: 'Active Events', value: stats?.active ?? 'N/A', icon: Clock, description: 'Currently active events' },
+    {
+      title: 'Events Organized',
+      value: stats?.eventsOrganized ?? 'N/A',
+      icon: Calendar,
+      description: 'Total events created',
+    },
+    {
+      title: 'Total Attendees',
+      value: stats?.totalAttendees ?? 'N/A',
+      icon: Users,
+      description: 'Across all events',
+    },
+    {
+      title: 'Avg Attendance Rate',
+      value: stats?.avgRate !== null ? `${stats.avgRate}%` : 'N/A',
+      icon: CheckCircle,
+      description: 'Attendance vs total records',
+    },
+    {
+      title: 'Active Events',
+      value: stats?.active ?? 'N/A',
+      icon: Clock,
+      description: 'Currently active events',
+    },
   ];
 
   // ===== FRONTEND INTERACTION =====
@@ -115,7 +151,7 @@ const MyEvents = () => {
       <CardContent>
         {loading && (
           <div className='space-y-2'>
-            {[1,2,3].map((i)=> (
+            {[1, 2, 3].map((i) => (
               <div key={i} className='rounded-lg border p-4'>
                 <Skeleton className='mb-2 h-5 w-48' />
                 <Skeleton className='mb-2 h-4 w-64' />
@@ -132,70 +168,75 @@ const MyEvents = () => {
         )}
         {!loading && !error && (
           <div className='space-y-4'>
-          {events.map((event) => (
-            <div key={event.id} className='flex items-start justify-between rounded-lg border p-4'>
-              <div className='flex-1'>
-                <div className='mb-2 flex items-center gap-2'>
-                  <h4 className='font-medium'>{event.title}</h4>
-                  <Badge
-                    variant={
-                      event.is_active === false
-                        ? 'destructive'
-                        : 'default'
-                    }
-                  >
-                    {event.is_active === false ? 'Cancelled' : 'Active'}
-                  </Badge>
-                </div>
-                <div className='text-muted-foreground mb-2 space-y-1 text-sm'>
-                  <div className='flex items-center gap-2'>
-                    <Calendar className='h-4 w-4' />
-                    {(event.start_at ? new Date(event.start_at).toLocaleDateString() : event.date || 'TBA')}
-                    {event.start_at && (
-                      <>
-                        {' '}
-                        •
-                        {' '}
-                        {new Date(event.start_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </>
-                    )}
+            {events.map((event) => (
+              <div
+                key={event.id}
+                className='flex items-start justify-between rounded-lg border p-4'
+              >
+                <div className='flex-1'>
+                  <div className='mb-2 flex items-center gap-2'>
+                    <h4 className='font-medium'>{event.title}</h4>
+                    <Badge variant={event.is_active === false ? 'destructive' : 'default'}>
+                      {event.is_active === false ? 'Cancelled' : 'Active'}
+                    </Badge>
                   </div>
-                  <div className='flex items-center gap-2'>
-                    <MapPin className='h-4 w-4' />
-                    {event.location_name || event.venue_address || 'TBA'}
+                  <div className='text-muted-foreground mb-2 space-y-1 text-sm'>
+                    <div className='flex items-center gap-2'>
+                      <Calendar className='h-4 w-4' />
+                      {event.start_at
+                        ? new Date(event.start_at).toLocaleDateString()
+                        : event.date || 'TBA'}
+                      {event.start_at && (
+                        <>
+                          {' '}
+                          •{' '}
+                          {new Date(event.start_at).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </>
+                      )}
+                    </div>
+                    <div className='flex items-center gap-2'>
+                      <MapPin className='h-4 w-4' />
+                      {event.location_name || event.venue_address || 'TBA'}
+                    </div>
+                  </div>
+                  <div className='flex items-center gap-4'>
+                    <div className='text-sm'>
+                      <span className='font-medium'>{event.attendance_count || 0}</span>
+                      {event.capacity && (
+                        <span className='text-muted-foreground'>/{event.capacity} attendees</span>
+                      )}
+                    </div>
+                    <Progress
+                      value={
+                        event.capacity
+                          ? Math.min(100, ((event.attendance_count || 0) / event.capacity) * 100)
+                          : 0
+                      }
+                      className='max-w-[100px] flex-1'
+                    />
                   </div>
                 </div>
-                <div className='flex items-center gap-4'>
-                  <div className='text-sm'>
-                    <span className='font-medium'>{event.attendance_count || 0}</span>
-                    {event.capacity && (
-                      <span className='text-muted-foreground'>/{event.capacity} attendees</span>
-                    )}
-                  </div>
-                  <Progress
-                    value={event.capacity ? Math.min(100, ((event.attendance_count || 0) / event.capacity) * 100) : 0}
-                    className='max-w-[100px] flex-1'
-                  />
-                </div>
-              </div>
-              <div className='flex flex-col gap-2'>
-                <Button size='sm' variant='outline'>
-                  <Eye className='mr-2 h-4 w-4' />
-                  View
-                </Button>
-                <Button size='sm' variant='outline'>
-                  <Edit className='mr-2 h-4 w-4' />
-                  Edit
-                </Button>
-                {event.status === 'upcoming' && (
+                <div className='flex flex-col gap-2'>
                   <Button size='sm' variant='outline'>
-                    <QrCode className='mr-2 h-4 w-4' />
-                    QR Code
+                    <Eye className='mr-2 h-4 w-4' />
+                    View
                   </Button>
-                )}
+                  <Button size='sm' variant='outline'>
+                    <Edit className='mr-2 h-4 w-4' />
+                    Edit
+                  </Button>
+                  {event.status === 'upcoming' && (
+                    <Button size='sm' variant='outline'>
+                      <QrCode className='mr-2 h-4 w-4' />
+                      QR Code
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
           </div>
         )}
       </CardContent>
@@ -204,7 +245,8 @@ const MyEvents = () => {
 };
 
 const AttendanceOverview = () => {
-  const { events, attendances, eventsLoading, attendancesLoading, eventsError, attendancesError } = useDashboardData();
+  const { events, attendances, eventsLoading, attendancesLoading, eventsError, attendancesError } =
+    useDashboardData();
   const [analytics, setAnalytics] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -247,7 +289,9 @@ const AttendanceOverview = () => {
       <CardContent>
         {loading && (
           <div className='space-y-2'>
-            {[1,2,3,4].map((i)=> <Skeleton key={i} className='h-6 w-full' />)}
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className='h-6 w-full' />
+            ))}
           </div>
         )}
         {error && !loading && (
@@ -257,45 +301,45 @@ const AttendanceOverview = () => {
           </Alert>
         )}
         {!loading && !error && (
-        <div className='space-y-4'>
-          {analytics.map((data, index) => (
-            <div key={index} className='space-y-2'>
-              <div className='flex items-center justify-between'>
-                <span className='text-sm font-medium'>{data.event}</span>
-                <div className='flex items-center gap-2'>
-                  <span className='text-muted-foreground text-sm'>
-                    {data.attended}/{data.registered}
-                  </span>
-                  <Badge
-                    variant={
-                      data.status === 'excellent'
-                        ? 'default'
-                        : data.status === 'good'
-                          ? 'secondary'
-                          : data.status === 'fair'
-                            ? 'outline'
-                            : 'destructive'
-                    }
-                  >
-                    {data.rate}%
-                  </Badge>
+          <div className='space-y-4'>
+            {analytics.map((data, index) => (
+              <div key={index} className='space-y-2'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm font-medium'>{data.event}</span>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-muted-foreground text-sm'>
+                      {data.attended}/{data.registered}
+                    </span>
+                    <Badge
+                      variant={
+                        data.status === 'excellent'
+                          ? 'default'
+                          : data.status === 'good'
+                            ? 'secondary'
+                            : data.status === 'fair'
+                              ? 'outline'
+                              : 'destructive'
+                      }
+                    >
+                      {data.rate}%
+                    </Badge>
+                  </div>
                 </div>
+                <Progress
+                  value={data.rate}
+                  className={`h-2 ${
+                    data.status === 'excellent'
+                      ? 'text-green-600'
+                      : data.status === 'good'
+                        ? 'text-blue-600'
+                        : data.status === 'fair'
+                          ? 'text-yellow-600'
+                          : 'text-red-600'
+                  }`}
+                />
               </div>
-              <Progress
-                value={data.rate}
-                className={`h-2 ${
-                  data.status === 'excellent'
-                    ? 'text-green-600'
-                    : data.status === 'good'
-                      ? 'text-blue-600'
-                      : data.status === 'fair'
-                        ? 'text-yellow-600'
-                        : 'text-red-600'
-                }`}
-              />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         )}
       </CardContent>
     </Card>
@@ -388,9 +432,9 @@ const EventTemplates = () => {
         </CardTitle>
         <CardDescription>Reusable templates for quick event creation</CardDescription>
       </CardHeader>
-        <CardContent>
-          <div className='text-muted-foreground text-sm'>No templates available.</div>
-        </CardContent>
+      <CardContent>
+        <div className='text-muted-foreground text-sm'>No templates available.</div>
+      </CardContent>
     </Card>
   );
 };
@@ -467,19 +511,24 @@ export function OrganizerDashboard({ user }) {
             <p className='font-medium'>Features in development:</p>
             <ul className='space-y-2 text-sm'>
               <li>
-                • <strong>Event Wizards:</strong> Guided creation with templates, checklists, and validations
+                • <strong>Event Wizards:</strong> Guided creation with templates, checklists, and
+                validations
               </li>
               <li>
-                • <strong>QR Operations:</strong> Batch QR generation and secure sharing for sessions
+                • <strong>QR Operations:</strong> Batch QR generation and secure sharing for
+                sessions
               </li>
               <li>
-                • <strong>Registration Controls:</strong> Waitlists, caps, and automated notifications
+                • <strong>Registration Controls:</strong> Waitlists, caps, and automated
+                notifications
               </li>
               <li>
-                • <strong>Analytics at a glance:</strong> Trends, no-shows, and engagement breakdowns
+                • <strong>Analytics at a glance:</strong> Trends, no-shows, and engagement
+                breakdowns
               </li>
               <li>
-                • <strong>Bulk Actions:</strong> Duplicate events, schedule series, and export attendees
+                • <strong>Bulk Actions:</strong> Duplicate events, schedule series, and export
+                attendees
               </li>
             </ul>
             <p className='border-t pt-4 text-xs'>

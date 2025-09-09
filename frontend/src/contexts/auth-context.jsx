@@ -81,8 +81,11 @@ export const AuthProvider = ({ children }) => {
     try {
       // Import API service dynamically to avoid circular deps
       const apiService = (await import('@/services/api-service')).default;
+      // Extract rememberMe option from credentials
+      const { rememberMe, ...loginCredentials } = credentials;
+
       // Normalize credentials: trim and lowercase email for case-insensitive auth
-      const payload = { ...credentials };
+      const payload = { ...loginCredentials };
       if (typeof payload.email === 'string') {
         payload.email = payload.email.trim().toLowerCase();
       }
@@ -92,9 +95,25 @@ export const AuthProvider = ({ children }) => {
       const response = await apiService.login(payload);
       // Expect: { access, refresh, user: {...} }
       if (response && response.access && response.user) {
-        localStorage.setItem('eas_auth_token', response.access);
-        localStorage.setItem('eas_auth_refresh', response.refresh || '');
-        localStorage.setItem('eas_auth_user', JSON.stringify(response.user));
+        // Store tokens with different strategies based on "Remember Me"
+        if (rememberMe) {
+          // Store in localStorage for persistent login
+          localStorage.setItem('eas_auth_token', response.access);
+          localStorage.setItem('eas_auth_refresh', response.refresh || '');
+          localStorage.setItem('eas_auth_user', JSON.stringify(response.user));
+          localStorage.setItem('eas_auth_remember', 'true');
+        } else {
+          // Store in sessionStorage for session-only login
+          sessionStorage.setItem('eas_auth_token', response.access);
+          sessionStorage.setItem('eas_auth_refresh', response.refresh || '');
+          sessionStorage.setItem('eas_auth_user', JSON.stringify(response.user));
+          // Also store in localStorage as fallback but mark as non-persistent
+          localStorage.setItem('eas_auth_token', response.access);
+          localStorage.setItem('eas_auth_refresh', response.refresh || '');
+          localStorage.setItem('eas_auth_user', JSON.stringify(response.user));
+          localStorage.removeItem('eas_auth_remember');
+        }
+
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
           payload: { user: response.user, token: response.access },
@@ -141,9 +160,14 @@ export const AuthProvider = ({ children }) => {
 
   // Logout function
   const logout = () => {
+    // Clear both storage types to ensure complete logout
     localStorage.removeItem('eas_auth_token');
     localStorage.removeItem('eas_auth_refresh');
     localStorage.removeItem('eas_auth_user');
+    localStorage.removeItem('eas_auth_remember');
+    sessionStorage.removeItem('eas_auth_token');
+    sessionStorage.removeItem('eas_auth_refresh');
+    sessionStorage.removeItem('eas_auth_user');
     dispatch({ type: AUTH_ACTIONS.LOGOUT });
   };
 
@@ -151,8 +175,16 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initializeSession = async () => {
       try {
-        const token = localStorage.getItem('eas_auth_token');
-        const user = localStorage.getItem('eas_auth_user');
+        // Check for persistent login first (localStorage)
+        let token = localStorage.getItem('eas_auth_token');
+        let user = localStorage.getItem('eas_auth_user');
+        let isRemembered = localStorage.getItem('eas_auth_remember') === 'true';
+
+        // If not found in localStorage or not remembered, check sessionStorage
+        if ((!token || !user) && !isRemembered) {
+          token = sessionStorage.getItem('eas_auth_token');
+          user = sessionStorage.getItem('eas_auth_user');
+        }
 
         if (token && user) {
           const parsedUser = JSON.parse(user);
@@ -171,6 +203,10 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem('eas_auth_token');
             localStorage.removeItem('eas_auth_refresh');
             localStorage.removeItem('eas_auth_user');
+            localStorage.removeItem('eas_auth_remember');
+            sessionStorage.removeItem('eas_auth_token');
+            sessionStorage.removeItem('eas_auth_refresh');
+            sessionStorage.removeItem('eas_auth_user');
             dispatch({ type: AUTH_ACTIONS.INITIALIZE_SESSION });
             try {
               window.dispatchEvent(new CustomEvent('eas:session-expired'));

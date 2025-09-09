@@ -3,6 +3,7 @@
  * Provides camera and file handling functionality for web environments
  * Uses react-webcam for camera access and react-dropzone for file uploads
  */
+import DevLogger from '@/lib/dev-logger';
 import { dataURLToBlob, blobToDataURL } from '@/lib/utility';
 
 class WebCameraService {
@@ -24,14 +25,14 @@ class WebCameraService {
     try {
       // Check if getUserMedia is supported
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        console.warn('Camera not supported in this browser');
+        DevLogger.warn('WebCameraService', 'Camera not supported in this browser');
         return false;
       }
 
       this.isInitialized = true;
       return true;
     } catch (error) {
-      console.error('Failed to initialize camera service:', error);
+      DevLogger.error('WebCameraService', 'Failed to initialize camera service', error);
       return false;
     }
   }
@@ -63,7 +64,11 @@ class WebCameraService {
 
       return true;
     } catch (error) {
-      console.warn('Camera access denied or not available:', error?.message || error);
+      DevLogger.warn(
+        'WebCameraService',
+        'Camera access denied or not available',
+        error?.message || error,
+      );
       return false;
     }
   }
@@ -429,7 +434,7 @@ class WebCameraService {
         if (uri.startsWith('data:')) {
           blob = dataURLToBlob(uri);
         } else {
-          // Fetch the image
+          // Fetch the image9
           const response = await fetch(uri);
           blob = await response.blob();
         }

@@ -73,9 +73,7 @@ export function ManagementDataProvider({ children }) {
       const res = await apiService.getDepartments();
       setDepartments(Array.isArray(res) ? res : res?.results || []);
     } catch (e) {
-      setDepartmentsError(
-        e?.response?.data?.error || e?.message || 'Failed to load departments',
-      );
+      setDepartmentsError(e?.response?.data?.error || e?.message || 'Failed to load departments');
     } finally {
       setDepartmentsLoading(false);
     }
@@ -162,9 +160,7 @@ export function ManagementDataProvider({ children }) {
     ],
   );
 
-  return (
-    <ManagementDataContext.Provider value={value}>{children}</ManagementDataContext.Provider>
-  );
+  return <ManagementDataContext.Provider value={value}>{children}</ManagementDataContext.Provider>;
 }
 
 export function useManagementData() {

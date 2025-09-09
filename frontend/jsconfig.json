@@ -2,21 +2,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@components/*": [
-        "./src/components/*"
-      ],
-      "@contexts/*": [
-        "./src/contexts/*"
-      ],
-      "@assets/*": [
-        "./src/assets/*"
-      ],
-      "@styles/*": [
-        "./src/styles/*"
-      ]
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@contexts/*": ["./src/contexts/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@styles/*": ["./src/styles/*"]
     },
     "jsx": "react-jsx",
     "module": "esnext",
@@ -26,13 +16,9 @@
     "checkJs": false,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
     "skipLibCheck": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules"
-  ]
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
 }

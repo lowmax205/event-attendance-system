@@ -1,6 +1,7 @@
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import DevLogger from '@/lib/dev-logger';
 import { cn } from '@/lib/utils';
 import { mapboxLocationService } from '@/services/mapbox-location-service';
 
@@ -54,7 +55,7 @@ const MapboxMap = ({
         setIsTokenLoaded(true);
         setTokenError(null);
       } catch (error) {
-        console.error('Failed to initialize Mapbox:', error);
+        DevLogger.error('MapboxMap', 'Failed to initialize Mapbox', error);
         setTokenError(error.message);
         setIsTokenLoaded(false);
       }
@@ -80,6 +81,12 @@ const MapboxMap = ({
   // Initialize map (only once when token is ready)
   useEffect(() => {
     if (map.current || !isTokenLoaded) return; // Initialize map only once and when token is loaded
+
+    // Defensive: ensure token exists on module to avoid vendor-side uncaught error
+    if (!mapboxgl || !mapboxgl.accessToken) {
+      setTokenError('Mapbox access token not available');
+      return;
+    }
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,

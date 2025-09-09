@@ -59,8 +59,8 @@ export default defineConfig([
       'unused-imports/no-unused-imports': 'error',
       // Suppress variable/arg unused warnings to achieve a clean lint run
       'unused-imports/no-unused-vars': 'error',
-      // Allow console usage project-wide to avoid warning noise in logs and services
-      'no-console': 'off',
+      // Enable console detection to enforce DevLogger usage
+      'no-console': 'error',
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       // Disable Fast Refresh export-only rule to allow utility exports in component files
@@ -93,13 +93,13 @@ export default defineConfig([
     rules: {
       // Allow dev dependencies import in tests
       'import/no-extraneous-dependencies': 'off',
-      // Allow console output in tests
-      'no-console': 'off',
+      // Allow console output in tests for debugging
+      'no-console': 'warn',
     },
   },
-  // Allow console usage in the centralized dev logger utility only
+  // Allow console usage ONLY in the centralized dev logger utility
   {
-    files: ['src/components/common/devLogger.js'],
+    files: ['src/lib/dev-logger.js'],
     rules: {
       'no-console': 'off',
     },

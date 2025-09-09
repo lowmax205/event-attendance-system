@@ -23,9 +23,12 @@ export default function HealthPing() {
     ping();
 
     // Then every 10 minutes
-    const id = setInterval(() => {
-      if (!disposed) ping();
-    }, 10 * 60 * 1000);
+    const id = setInterval(
+      () => {
+        if (!disposed) ping();
+      },
+      10 * 60 * 1000,
+    );
 
     return () => {
       disposed = true;
@@ -33,6 +36,6 @@ export default function HealthPing() {
     };
   }, []);
 
-    // This component renders nothing
+  // This component renders nothing
   return null;
 }

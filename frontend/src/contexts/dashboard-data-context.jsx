@@ -60,7 +60,17 @@ export function DashboardDataProvider({ children }) {
       refreshAttendances,
       refreshAll,
     }),
-    [events, eventsLoading, eventsError, attendances, attLoading, attError, refreshEvents, refreshAttendances, refreshAll],
+    [
+      events,
+      eventsLoading,
+      eventsError,
+      attendances,
+      attLoading,
+      attError,
+      refreshEvents,
+      refreshAttendances,
+      refreshAll,
+    ],
   );
 
   return <DashboardDataContext.Provider value={value}>{children}</DashboardDataContext.Provider>;

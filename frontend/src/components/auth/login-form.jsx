@@ -11,9 +11,21 @@ export function LoginForm({ onSuccess, setTab, initialValues = {} }) {
     email: initialValues.email || '',
     password: initialValues.password || '',
   });
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Load saved email if "Remember Me" was previously checked
+  React.useEffect(() => {
+    const savedEmail = localStorage.getItem('eas_remember_email');
+    const wasRemembered = localStorage.getItem('eas_remember_me') === 'true';
+
+    if (wasRemembered && savedEmail) {
+      setLoginForm((prev) => ({ ...prev, email: savedEmail }));
+      setRememberMe(true);
+    }
+  }, []);
 
   // Update form when initialValues change
   React.useEffect(() => {
@@ -34,9 +46,18 @@ export function LoginForm({ onSuccess, setTab, initialValues = {} }) {
     // Add 2-second delay before processing
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const result = await login(loginForm);
+    const result = await login({ ...loginForm, rememberMe });
 
     if (result.success) {
+      // Handle "Remember Me" functionality
+      if (rememberMe) {
+        localStorage.setItem('eas_remember_email', loginForm.email);
+        localStorage.setItem('eas_remember_me', 'true');
+      } else {
+        localStorage.removeItem('eas_remember_email');
+        localStorage.removeItem('eas_remember_me');
+      }
+
       setShowSuccess(true);
       // Hide success message and call onSuccess after a short delay
       setTimeout(() => {
@@ -82,8 +103,13 @@ export function LoginForm({ onSuccess, setTab, initialValues = {} }) {
         </Alert>
       )}
       <div className='flex items-center justify-between text-xs'>
-        <label className='flex items-center gap-2'>
-          <input type='checkbox' className='border-border bg-background h-3.5 w-3.5 rounded' />
+        <label className='flex cursor-pointer items-center gap-2'>
+          <input
+            type='checkbox'
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className='border-border bg-background accent-primary h-3.5 w-3.5 cursor-pointer rounded'
+          />
           <span className='text-muted-foreground'>Remember me</span>
         </label>
         <button type='button' className='text-primary hover:underline'>

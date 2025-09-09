@@ -1,11 +1,15 @@
+import mapboxgl from 'mapbox-gl';
+import DevLogger from '@/lib/dev-logger';
+
 /**
  * Mapbox Location Service
  * Provides secure token management for Mapbox integration
  */
 class MapboxLocationService {
   constructor() {
-    this.mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN || null;
-    this.mapboxgl = null;
+    this.mapboxToken = null;
+    // Prefer ESM import; fall back to global if present
+    this.mapboxgl = mapboxgl || (typeof window !== 'undefined' ? window.mapboxgl : null);
     this._stylesInstalled = false;
   }
 
@@ -13,21 +17,57 @@ class MapboxLocationService {
    * Initialize Mapbox GL library with secure token from backend
    */
   async initializeMapbox() {
-    if (typeof window !== 'undefined' && window.mapboxgl && !this.mapboxgl) {
+    // Ensure we have a reference to the Mapbox GL module
+    if (!this.mapboxgl && typeof window !== 'undefined' && window.mapboxgl) {
       this.mapboxgl = window.mapboxgl;
     }
-    if (this.mapboxgl && !this.mapboxgl.accessToken) {
-      // Try to use configured token, else fetch from backend
-      const { apiService } = await import('@/services/api-service.js');
-      const token = this.mapboxToken || (await apiService.getMapboxToken());
-      if (token) {
-        this.mapboxToken = token;
-        this.mapboxgl.accessToken = token;
+
+    // Attempt to ensure token is available and applied to module
+    if (!this.mapboxToken && !(mapboxgl && mapboxgl.accessToken)) {
+      try {
+        const { apiService } = await import('@/services/api-service.js');
+        const token = await apiService.getMapboxToken();
+        if (token) {
+          this.mapboxToken = token;
+        }
+      } catch (err) {
+        DevLogger.warn('Failed to retrieve Mapbox token:', err && err.message ? err.message : err);
       }
     }
+
+    // Apply token to ESM module and any global instance
+    if (this.mapboxToken && !(mapboxgl && mapboxgl.accessToken)) {
+      try {
+        mapboxgl.accessToken = this.mapboxToken;
+      } catch {
+        /* noop */
+      }
+      if (typeof window !== 'undefined' && window.mapboxgl && !window.mapboxgl.accessToken) {
+        try {
+          window.mapboxgl.accessToken = this.mapboxToken;
+        } catch {
+          /* noop */
+        }
+      }
+      if (this.mapboxgl && !this.mapboxgl.accessToken) {
+        try {
+          this.mapboxgl.accessToken = this.mapboxToken;
+        } catch {
+          /* noop */
+        }
+      }
+      DevLogger.info('Mapbox token successfully applied');
+    }
+
+    // If we still don't have an access token on the module, throw to let UI show a friendly message
+    if (!(mapboxgl && mapboxgl.accessToken)) {
+      this.installLocatingStyles();
+      throw new Error('Mapbox access token is not configured');
+    }
+
     // Ensure animation styles are available globally (safe to call multiple times)
     this.installLocatingStyles();
-    return this.mapboxgl;
+    return this.mapboxgl || mapboxgl;
   }
 
   /**

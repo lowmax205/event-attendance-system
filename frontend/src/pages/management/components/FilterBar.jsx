@@ -1,7 +1,13 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 // Contract: search + select(s) + sort controls
 // Props:
@@ -11,13 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 // - clear?: { show: boolean, onClear }
 // - leftExtra?: ReactNode
 // - rightExtra?: ReactNode
-export default function FilterBar({
-  search,
-  selects = [],
-  sort,
-  clear,
-  rightExtra,
-}) {
+export default function FilterBar({ search, selects = [], sort, clear, rightExtra }) {
   return (
     <div className='flex flex-col gap-4 md:flex-row md:items-center'>
       <div className='relative flex-1'>

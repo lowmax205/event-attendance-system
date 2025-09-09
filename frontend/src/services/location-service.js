@@ -4,6 +4,7 @@
  * Includes 50-meter verification against event locations
  */
 
+import DevLogger from '@/lib/dev-logger';
 import { haversineDistance } from '@/lib/utility';
 
 class LocationService {
@@ -28,7 +29,7 @@ class LocationService {
     const requestCooldown = 10000; // 10 seconds cooldown between requests
 
     if (this.permissionRequestInProgress) {
-      console.log('Location permission request already in progress, skipping...');
+      DevLogger.info('LocationService', 'Permission request already in progress, skipping');
       return this.lastPermissionRequest;
     }
 
@@ -36,7 +37,10 @@ class LocationService {
       this.lastPermissionRequest &&
       now - this.lastPermissionRequest.timestamp < requestCooldown
     ) {
-      console.log('Using recent location permission result (within cooldown period)');
+      DevLogger.info(
+        'LocationService',
+        'Using recent location permission result within cooldown period',
+      );
       return this.lastPermissionRequest.data;
     }
 
@@ -86,7 +90,7 @@ class LocationService {
 
       return locationData;
     } catch (error) {
-      console.error('Location permission request failed:', error);
+      DevLogger.error('LocationService', 'Location permission request failed', error);
       locationData.error = error.message;
 
       // Cache failed result too (for shorter time)
@@ -160,7 +164,7 @@ class LocationService {
           resolve(locationData.gps);
         },
         (error) => {
-          console.error('GPS location failed:', error);
+          DevLogger.error('LocationService', 'GPS location failed', error);
           locationData.gps = { error: error.message };
           resolve(null);
         },
@@ -231,7 +235,7 @@ class LocationService {
 
       if (this.ipLocationCache && this.ipLocationCacheExpiry && now < this.ipLocationCacheExpiry) {
         // Use cached data
-        console.log('Using cached IP location data');
+        DevLogger.info('LocationService', 'Using cached IP location data');
         locationData.ip = {
           ...this.ipLocationCache,
           cached: true,
@@ -243,7 +247,10 @@ class LocationService {
 
       // If we already have GPS data, don't bother with IP location
       if (locationData.gps && !locationData.gps.error && locationData.gps.accuracy < 1000) {
-        console.log('GPS location available with good accuracy, skipping IP location');
+        DevLogger.info(
+          'LocationService',
+          'GPS location available with good accuracy, skipping IP location',
+        );
         locationData.ip = {
           skipped: true,
           reason: 'GPS location available with sufficient accuracy',
@@ -252,7 +259,7 @@ class LocationService {
         return;
       }
 
-      console.log('Attempting to fetch IP location data...');
+      DevLogger.info('LocationService', 'Attempting to fetch IP location data');
 
       // Try to get fresh IP location, but with error handling for rate limits
       const controller = new AbortController();
@@ -295,9 +302,13 @@ class LocationService {
       };
       locationData.methods.push('ip');
 
-      console.log('Successfully fetched and cached IP location');
+      DevLogger.success('LocationService', 'Successfully fetched and cached IP location');
     } catch (error) {
-      console.warn('IP location failed, using fallback coordinates:', error.message);
+      DevLogger.warn(
+        'LocationService',
+        'IP location failed, using fallback coordinates',
+        error.message,
+      );
 
       // Use fallback coordinates without attempting external API again
       const fallbackLocation = {
@@ -470,7 +481,7 @@ class LocationService {
         }
       },
       (error) => {
-        console.error('Location watch error:', error);
+        DevLogger.error('LocationService', 'Location watch error', error);
         if (callback) {
           callback({ error: error.message });
         }
@@ -499,7 +510,7 @@ class LocationService {
     this.ipLocationCacheExpiry = null;
     this.lastPermissionRequest = null;
     this.permissionRequestInProgress = false;
-    console.log('Location service cache cleared');
+    DevLogger.info('LocationService', 'Location service cache cleared');
   }
 
   /**

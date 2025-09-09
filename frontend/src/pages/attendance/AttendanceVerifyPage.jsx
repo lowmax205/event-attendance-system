@@ -22,7 +22,9 @@ import MapboxMap from '@/components/ui/mapbox-map';
 import { Modal } from '@/components/ui/modal';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/auth-context';
+import DevLogger from '@/lib/dev-logger';
 import { formatCountdownVerbose } from '@/lib/formatting';
+import { createRedirectParam } from '@/lib/utility';
 import { apiService } from '@/services/api-service';
 import { locationService } from '@/services/location-service';
 import { webCameraService } from '@/services/web-camera-service';
@@ -64,17 +66,23 @@ const AttendanceVerifyPage = () => {
       }
 
       const ua = (navigator.userAgent || '').toLowerCase();
-      const mobileRegex = /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm|mobile|silk|kindle|opera\smini|opera\smobi/;
+      const mobileRegex =
+        /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm|mobile|silk|kindle|opera\smini|opera\smobi/;
       const tabletRegex = /ipad|android(?!.*mobile)|tablet|xoom|sch-i800|playbook|silk|kindle/;
       const matchesUA = mobileRegex.test(ua) || tabletRegex.test(ua);
 
       // Fallback to feature detection
-      const hasCoarsePointer = typeof window !== 'undefined' && window.matchMedia
-        ? (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(any-pointer: coarse)').matches)
-        : false;
+      const hasCoarsePointer =
+        typeof window !== 'undefined' && window.matchMedia
+          ? window.matchMedia('(pointer: coarse)').matches ||
+            window.matchMedia('(any-pointer: coarse)').matches
+          : false;
 
       // Small viewport heuristic (avoid triggering on resized desktop by combining with coarse pointer)
-      const viewportNarrow = typeof window !== 'undefined' ? Math.min(window.innerWidth, window.innerHeight) <= 1024 : false;
+      const viewportNarrow =
+        typeof window !== 'undefined'
+          ? Math.min(window.innerWidth, window.innerHeight) <= 1024
+          : false;
 
       return Boolean(matchesUA || (hasCoarsePointer && viewportNarrow));
     } catch {
@@ -175,14 +183,14 @@ const AttendanceVerifyPage = () => {
         const p = await apiService.getProfile();
         if (!p?.is_complete_profile) {
           const current = `${location.pathname}${location.search || ''}`;
-          const redirect = encodeURIComponent(current);
+          const redirect = createRedirectParam(current);
           navigate(`/profile?redirect=${redirect}`, { replace: true });
           return;
         }
       } catch {
         // If profile cannot be fetched, be safe and send to profile
         const current = `${location.pathname}${location.search || ''}`;
-        const redirect = encodeURIComponent(current);
+        const redirect = createRedirectParam(current);
         navigate(`/profile?redirect=${redirect}`, { replace: true });
         return;
       } finally {
@@ -201,7 +209,7 @@ const AttendanceVerifyPage = () => {
       const now = Date.now();
 
       // Debug logging to help troubleshoot expiration issues
-      console.log('QR Expiry Check:', {
+      DevLogger.info('AttendanceVerify', 'QR Expiry Check', {
         expParam,
         expTs: new Date(expTs).toISOString(),
         now: new Date(now).toISOString(),
@@ -212,13 +220,13 @@ const AttendanceVerifyPage = () => {
       });
 
       if (!Number.isNaN(expTs) && now > expTs) {
-        console.warn('QR Code has expired');
+        DevLogger.warn('AttendanceVerify', 'QR Code has expired');
         setQrExpired(true);
       } else {
-        console.log('QR Code is still valid');
+        DevLogger.info('AttendanceVerify', 'QR Code is still valid');
       }
     } catch (error) {
-      console.warn('QR expiry check failed:', error);
+      DevLogger.warn('AttendanceVerify', 'QR expiry check failed', error);
       // Don't set expired on parse errors - let the user proceed
     }
   }, [expParam]);
@@ -264,7 +272,7 @@ const AttendanceVerifyPage = () => {
           // ignore window computation errors
         }
       } catch (err) {
-        console.error(err);
+        DevLogger.error('AttendanceVerify', 'Failed to load event', err);
         setInitError('Failed to load event.');
       } finally {
         setLoading(false);
@@ -305,7 +313,7 @@ const AttendanceVerifyPage = () => {
 
         // Debug logging for window changes
         if (wasAllowed !== nowAllowed) {
-          console.log('Verification Window Status Changed:', {
+          DevLogger.info('AttendanceVerify', 'Verification Window Status Changed', {
             wasAllowed,
             nowAllowed,
             inStart,
@@ -408,7 +416,7 @@ const AttendanceVerifyPage = () => {
         return { uri: result.uri, blob: result.blob };
       }
     } catch (e) {
-      console.warn('Capture failed:', e?.message || e);
+      DevLogger.warn('AttendanceVerify', 'Capture failed', e?.message || e);
     }
     return null;
   }, []);
@@ -709,7 +717,6 @@ const AttendanceVerifyPage = () => {
     setUploadProgress(0);
     setUploadLabel('');
     try {
-
       // Try to find existing attendance record for this user/event
       const existing = await apiService.get(
         `/attendances/attendances/?event=${eventId}&user=${user?.id}`,
@@ -755,7 +762,7 @@ const AttendanceVerifyPage = () => {
         action = 'check-in';
       }
 
-      console.log('Attendance submission decision:', {
+      DevLogger.info('AttendanceVerify', 'Attendance submission decision', {
         action,
         inStart,
         inEnd,
@@ -792,7 +799,7 @@ const AttendanceVerifyPage = () => {
             });
             form.append('signature', signFile);
           } catch (e) {
-            console.warn('Failed to attach signature:', e.message);
+            DevLogger.warn('AttendanceVerify', 'Failed to attach signature', e.message);
           }
         }
         setUploadLabel('Uploading photos…');
@@ -830,7 +837,7 @@ const AttendanceVerifyPage = () => {
             });
             form.append('signature', signFile);
           } catch (e) {
-            console.warn('Failed to attach signature:', e.message);
+            DevLogger.warn('AttendanceVerify', 'Failed to attach signature', e.message);
           }
         }
         setUploadLabel('Uploading check-out evidence…');
@@ -841,7 +848,6 @@ const AttendanceVerifyPage = () => {
         );
         setExistingRecord(updated || null);
       }
-
 
       setSubmitSuccess(true);
       // Refresh existing record snapshot to reflect completed action, which will lock the button
@@ -855,7 +861,7 @@ const AttendanceVerifyPage = () => {
         /* ignore refresh errors */
       }
     } catch (e) {
-      console.error(e);
+      DevLogger.error('AttendanceVerify', 'Attendance submission failed', e);
       const detailed = e?.response?.data || e?.message;
       let msg = 'Failed to submit attendance';
       if (detailed) {
@@ -885,7 +891,7 @@ const AttendanceVerifyPage = () => {
       <div className='from-primary/10 via-primary/5 to-background min-h-screen bg-gradient-to-br pt-16'>
         <Header />
         <div className='flex min-h-[50vh] items-center justify-center px-4'>
-          <Card className='bg-card text-card-foreground max-w-md w-full'>
+          <Card className='bg-card text-card-foreground w-full max-w-md'>
             <CardHeader>
               <CardTitle>Use a Mobile or Tablet</CardTitle>
             </CardHeader>
@@ -894,7 +900,7 @@ const AttendanceVerifyPage = () => {
                 Attendance verification requires accurate on-device GPS and camera access. Please
                 open this page on your mobile phone or tablet to continue.
               </p>
-              <ul className='list-disc list-inside text-muted-foreground'>
+              <ul className='text-muted-foreground list-inside list-disc'>
                 <li>Use Chrome on Android or Safari on iOS</li>
                 <li>Ensure location and camera permissions are allowed</li>
               </ul>

@@ -8,11 +8,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 // Initialize Mapbox GL for services that expect a global
 if (typeof window !== 'undefined') {
-  // Set token if provided
-  const token = import.meta.env.VITE_MAPBOX_TOKEN;
-  if (token) {
-    mapboxgl.accessToken = token;
-  }
   window.mapboxgl = mapboxgl;
 }
 

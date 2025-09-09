@@ -47,7 +47,10 @@ export function ViewAttendanceModal({
                 <div>
                   <span className='text-muted-foreground text-sm font-medium'>Email:</span>
                   <p className='text-sm'>
-                    {record._resolved_user_email || record.user?.email || record.user_email || 'No Email'}
+                    {record._resolved_user_email ||
+                      record.user?.email ||
+                      record.user_email ||
+                      'No Email'}
                   </p>
                 </div>
                 {record.user?.student_id && (
@@ -63,7 +66,9 @@ export function ViewAttendanceModal({
               <div className='space-y-2'>
                 <div>
                   <span className='text-muted-foreground text-sm font-medium'>Title:</span>
-                  <p className='text-sm'>{record.event?.title || record.event_title || 'Unknown Event'}</p>
+                  <p className='text-sm'>
+                    {record.event?.title || record.event_title || 'Unknown Event'}
+                  </p>
                 </div>
                 <div>
                   <span className='text-muted-foreground text-sm font-medium'>Date:</span>
@@ -106,13 +111,17 @@ export function ViewAttendanceModal({
               <div>
                 <span className='text-muted-foreground text-sm font-medium'>Check-in Time:</span>
                 <p className='text-sm'>
-                  {record.checkin_time ? new Date(record.checkin_time).toLocaleString() : 'Not checked in'}
+                  {record.checkin_time
+                    ? new Date(record.checkin_time).toLocaleString()
+                    : 'Not checked in'}
                 </p>
               </div>
               <div>
                 <span className='text-muted-foreground text-sm font-medium'>Check-out Time:</span>
                 <p className='text-sm'>
-                  {record.checkout_time ? new Date(record.checkout_time).toLocaleString() : 'Not checked out'}
+                  {record.checkout_time
+                    ? new Date(record.checkout_time).toLocaleString()
+                    : 'Not checked out'}
                 </p>
               </div>
               <div>
@@ -131,9 +140,12 @@ export function ViewAttendanceModal({
               <div className='grid grid-cols-2 gap-4'>
                 {(record.checkin_latitude || record.checkin_longitude) && (
                   <div>
-                    <span className='text-muted-foreground text-sm font-medium'>Check-in Location:</span>
+                    <span className='text-muted-foreground text-sm font-medium'>
+                      Check-in Location:
+                    </span>
                     <p className='text-sm'>
-                      Lat: {record.checkin_latitude || 'N/A'}, Lng: {record.checkin_longitude || 'N/A'}
+                      Lat: {record.checkin_latitude || 'N/A'}, Lng:{' '}
+                      {record.checkin_longitude || 'N/A'}
                     </p>
                     {record.checkin_latitude && record.checkin_longitude && (
                       <div className='mt-2'>
@@ -150,9 +162,12 @@ export function ViewAttendanceModal({
                 )}
                 {(record.checkout_latitude || record.checkout_longitude) && (
                   <div>
-                    <span className='text-muted-foreground text-sm font-medium'>Check-out Location:</span>
+                    <span className='text-muted-foreground text-sm font-medium'>
+                      Check-out Location:
+                    </span>
                     <p className='text-sm'>
-                      Lat: {record.checkout_latitude || 'N/A'}, Lng: {record.checkout_longitude || 'N/A'}
+                      Lat: {record.checkout_latitude || 'N/A'}, Lng:{' '}
+                      {record.checkout_longitude || 'N/A'}
                     </p>
                     {record.checkout_latitude && record.checkout_longitude && (
                       <div className='mt-2'>
@@ -177,7 +192,9 @@ export function ViewAttendanceModal({
               <div className='grid grid-cols-2 gap-4'>
                 {record.checkin_photo_front && (
                   <div>
-                    <span className='text-muted-foreground text-sm font-medium'>Check-in Photo:</span>
+                    <span className='text-muted-foreground text-sm font-medium'>
+                      Check-in Photo:
+                    </span>
                     <img
                       src={record.checkin_photo_front}
                       alt='Check-in'
@@ -187,7 +204,9 @@ export function ViewAttendanceModal({
                 )}
                 {record.checkin_photo_back && (
                   <div>
-                    <span className='text-muted-foreground text-sm font-medium'>Additional Photo:</span>
+                    <span className='text-muted-foreground text-sm font-medium'>
+                      Additional Photo:
+                    </span>
                     <img
                       src={record.checkin_photo_back}
                       alt='Additional'
@@ -207,7 +226,11 @@ export function ViewAttendanceModal({
           )}
 
           <div className='flex justify-end gap-2 pt-4'>
-            <Button variant='outline' onClick={() => onOpenEvidence?.(record)} className='flex items-center gap-2'>
+            <Button
+              variant='outline'
+              onClick={() => onOpenEvidence?.(record)}
+              className='flex items-center gap-2'
+            >
               <Eye className='h-4 w-4' />
               View Evidence
             </Button>
@@ -216,7 +239,11 @@ export function ViewAttendanceModal({
                 Verify
               </Button>
             )}
-            <Button variant='destructive' onClick={() => onDelete?.(record)} className='flex items-center gap-2'>
+            <Button
+              variant='destructive'
+              onClick={() => onDelete?.(record)}
+              className='flex items-center gap-2'
+            >
               <Trash2 className='h-4 w-4' />
               Delete
             </Button>
@@ -250,7 +277,8 @@ export function EvidenceModal({ open, onOpenChange, record, loading }) {
               </div>
               {(rec.checkin_latitude || rec.checkin_longitude) && (
                 <div className='text-sm'>
-                  Location: Lat {rec.checkin_latitude ?? 'N/A'}, Lng {rec.checkin_longitude ?? 'N/A'}{' '}
+                  Location: Lat {rec.checkin_latitude ?? 'N/A'}, Lng{' '}
+                  {rec.checkin_longitude ?? 'N/A'}{' '}
                   {rec.checkin_latitude && rec.checkin_longitude && (
                     <a
                       href={`https://www.google.com/maps?q=${rec.checkin_latitude},${rec.checkin_longitude}`}
@@ -306,7 +334,8 @@ export function EvidenceModal({ open, onOpenChange, record, loading }) {
               </div>
               {(rec.checkout_latitude || rec.checkout_longitude) && (
                 <div className='text-sm'>
-                  Location: Lat {rec.checkout_latitude ?? 'N/A'}, Lng {rec.checkout_longitude ?? 'N/A'}{' '}
+                  Location: Lat {rec.checkout_latitude ?? 'N/A'}, Lng{' '}
+                  {rec.checkout_longitude ?? 'N/A'}{' '}
                   {rec.checkout_latitude && rec.checkout_longitude && (
                     <a
                       href={`https://www.google.com/maps?q=${rec.checkout_latitude},${rec.checkout_longitude}`}
@@ -362,7 +391,12 @@ export function EvidenceModal({ open, onOpenChange, record, loading }) {
             <div>
               <div className='text-sm font-medium'>Check-in Signature</div>
               {rec.signature_check_in ? (
-                <a href={rec.signature_check_in} target='_blank' rel='noreferrer' className='mt-1 block'>
+                <a
+                  href={rec.signature_check_in}
+                  target='_blank'
+                  rel='noreferrer'
+                  className='mt-1 block'
+                >
                   <div className='rounded border bg-white p-3'>
                     <div className='flex h-48 w-full items-end justify-center overflow-hidden rounded-md bg-white'>
                       <img
@@ -380,7 +414,12 @@ export function EvidenceModal({ open, onOpenChange, record, loading }) {
             <div>
               <div className='text-sm font-medium'>Check-out Signature</div>
               {rec.signature_check_out ? (
-                <a href={rec.signature_check_out} target='_blank' rel='noreferrer' className='mt-1 block'>
+                <a
+                  href={rec.signature_check_out}
+                  target='_blank'
+                  rel='noreferrer'
+                  className='mt-1 block'
+                >
                   <div className='rounded border bg-white p-3'>
                     <div className='flex h-48 w-full items-end justify-center overflow-hidden rounded-md bg-white'>
                       <img
@@ -427,7 +466,12 @@ export function ManualEntryModal({
   onCancel,
 }) {
   return (
-    <Modal title='Manual Attendance Entry' open={open} onOpenChange={onOpenChange} className='max-w-4xl'>
+    <Modal
+      title='Manual Attendance Entry'
+      open={open}
+      onOpenChange={onOpenChange}
+      className='max-w-4xl'
+    >
       <div className='space-y-4'>
         <div className='grid grid-cols-1 gap-4'>
           {/* Student Name */}
@@ -444,7 +488,9 @@ export function ManualEntryModal({
                 required
               />
               <div className='absolute top-1/2 right-2 flex -translate-y-1/2 items-center gap-2'>
-                {userSearchLoading && <span className='border-primary h-4 w-4 animate-spin rounded-full border-b-2' />}
+                {userSearchLoading && (
+                  <span className='border-primary h-4 w-4 animate-spin rounded-full border-b-2' />
+                )}
                 {verifiedUser && <span className='text-success text-xs font-medium'>Verified</span>}
               </div>
             </div>
@@ -509,8 +555,14 @@ export function ManualEntryModal({
             <Label htmlFor='campus'>
               Campus * {verifiedUser && <span className='text-success'>(Auto-filled)</span>}
             </Label>
-            <Select value={manualEntryForm.campus} onValueChange={(value) => onChange('campus', value)} disabled={verifiedUser}>
-              <SelectTrigger className={`w-full ${verifiedUser ? 'border-success/20 bg-success/5' : ''}`}>
+            <Select
+              value={manualEntryForm.campus}
+              onValueChange={(value) => onChange('campus', value)}
+              disabled={verifiedUser}
+            >
+              <SelectTrigger
+                className={`w-full ${verifiedUser ? 'border-success/20 bg-success/5' : ''}`}
+              >
                 <SelectValue placeholder='Select a campus' />
               </SelectTrigger>
               <SelectContent>
@@ -528,13 +580,22 @@ export function ManualEntryModal({
             <Label htmlFor='department'>
               Department * {verifiedUser && <span className='text-success'>(Auto-filled)</span>}
             </Label>
-            <Select value={manualEntryForm.department} onValueChange={(value) => onChange('department', value)} disabled={verifiedUser}>
-              <SelectTrigger className={`w-full ${verifiedUser ? 'border-success/20 bg-success/5' : ''}`}>
+            <Select
+              value={manualEntryForm.department}
+              onValueChange={(value) => onChange('department', value)}
+              disabled={verifiedUser}
+            >
+              <SelectTrigger
+                className={`w-full ${verifiedUser ? 'border-success/20 bg-success/5' : ''}`}
+              >
                 <SelectValue placeholder='Select a department' />
               </SelectTrigger>
               <SelectContent>
                 {departments
-                  .filter((dept) => !manualEntryForm.campus || dept.campus.toString() === manualEntryForm.campus)
+                  .filter(
+                    (dept) =>
+                      !manualEntryForm.campus || dept.campus.toString() === manualEntryForm.campus,
+                  )
                   .map((department) => (
                     <SelectItem key={department.id} value={department.id.toString()}>
                       {department.name} ({department.abbreviation})
@@ -549,13 +610,23 @@ export function ManualEntryModal({
             <Label htmlFor='course'>
               Course * {verifiedUser && <span className='text-success'>(Auto-filled)</span>}
             </Label>
-            <Select value={manualEntryForm.course} onValueChange={(value) => onChange('course', value)} disabled={verifiedUser}>
-              <SelectTrigger className={`w-full ${verifiedUser ? 'border-success/20 bg-success/5' : ''}`}>
+            <Select
+              value={manualEntryForm.course}
+              onValueChange={(value) => onChange('course', value)}
+              disabled={verifiedUser}
+            >
+              <SelectTrigger
+                className={`w-full ${verifiedUser ? 'border-success/20 bg-success/5' : ''}`}
+              >
                 <SelectValue placeholder='Select a course' />
               </SelectTrigger>
               <SelectContent>
                 {courses
-                  .filter((course) => !manualEntryForm.department || course.department.toString() === manualEntryForm.department)
+                  .filter(
+                    (course) =>
+                      !manualEntryForm.department ||
+                      course.department.toString() === manualEntryForm.department,
+                  )
                   .map((course) => (
                     <SelectItem key={course.id} value={course.id.toString()}>
                       {course.name} ({course.abbreviation})
@@ -568,7 +639,10 @@ export function ManualEntryModal({
           {/* Event */}
           <div className='space-y-2'>
             <Label htmlFor='event'>Event *</Label>
-            <Select value={manualEntryForm.event} onValueChange={(value) => onChange('event', value)}>
+            <Select
+              value={manualEntryForm.event}
+              onValueChange={(value) => onChange('event', value)}
+            >
               <SelectTrigger className='w-full'>
                 <SelectValue placeholder='Select an event' />
               </SelectTrigger>
@@ -585,7 +659,10 @@ export function ManualEntryModal({
           {/* Status */}
           <div className='space-y-2'>
             <Label htmlFor='status'>Status *</Label>
-            <Select value={manualEntryForm.status} onValueChange={(value) => onChange('status', value)}>
+            <Select
+              value={manualEntryForm.status}
+              onValueChange={(value) => onChange('status', value)}
+            >
               <SelectTrigger className='w-full'>
                 <SelectValue placeholder='Select status' />
               </SelectTrigger>
@@ -602,7 +679,7 @@ export function ManualEntryModal({
 
           {/* Status, Check-in Time, and Check-out Time - Two columns */}
           <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-            {(manualEntryForm.status === 'present' || manualEntryForm.status === 'late') ? (
+            {manualEntryForm.status === 'present' || manualEntryForm.status === 'late' ? (
               <DateTimePicker
                 label='Check-in Time'
                 value={manualEntryForm.checkin_time}
@@ -615,7 +692,7 @@ export function ManualEntryModal({
               <div />
             )}
 
-            {(manualEntryForm.status === 'present' || manualEntryForm.status === 'late') ? (
+            {manualEntryForm.status === 'present' || manualEntryForm.status === 'late' ? (
               <DateTimePicker
                 label='Check-out Time'
                 value={manualEntryForm.checkout_time}
@@ -632,7 +709,9 @@ export function ManualEntryModal({
           {/* Notes/Reason */}
           <div className='space-y-2'>
             <Label htmlFor='notes'>
-              {manualEntryForm.status === 'absent' || manualEntryForm.status === 'excused' ? 'Reason *' : 'Notes'}
+              {manualEntryForm.status === 'absent' || manualEntryForm.status === 'excused'
+                ? 'Reason *'
+                : 'Notes'}
             </Label>
             <Textarea
               id='notes'
@@ -655,19 +734,34 @@ export function ManualEntryModal({
           <h4 className='mb-2 text-sm font-medium'>Status Information:</h4>
           <div className='text-sm'>
             {manualEntryForm.status === 'present' && (
-              <p>• Present: Student attended the event. Check-in and check-out times will be recorded.</p>
+              <p>
+                • Present: Student attended the event. Check-in and check-out times will be
+                recorded.
+              </p>
             )}
             {manualEntryForm.status === 'late' && (
-              <p>• Late: Student arrived late to the event. Check-in and check-out times will be recorded.</p>
+              <p>
+                • Late: Student arrived late to the event. Check-in and check-out times will be
+                recorded.
+              </p>
             )}
             {manualEntryForm.status === 'absent' && (
-              <p>• Absent: Student did not attend the event. Check-in/out times will show &quot;Absent&quot;.</p>
+              <p>
+                • Absent: Student did not attend the event. Check-in/out times will show
+                &quot;Absent&quot;.
+              </p>
             )}
             {manualEntryForm.status === 'excused' && (
-              <p>• Excused: Student had a valid reason for not attending. Check-in/out times will show &quot;Excused&quot;.</p>
+              <p>
+                • Excused: Student had a valid reason for not attending. Check-in/out times will
+                show &quot;Excused&quot;.
+              </p>
             )}
             {manualEntryForm.status === 'invalid' && (
-              <p>• Invalid: Attendance record is invalid or disputed. Check-in/out times will show &quot;Invalid&quot;.</p>
+              <p>
+                • Invalid: Attendance record is invalid or disputed. Check-in/out times will show
+                &quot;Invalid&quot;.
+              </p>
             )}
           </div>
         </div>
@@ -699,8 +793,12 @@ export function ManualEntryModal({
               loading ||
               !manualEntryForm.user_name ||
               !manualEntryForm.event ||
-              (!verifiedUser && (!manualEntryForm.campus || !manualEntryForm.department || !manualEntryForm.course)) ||
-              ((manualEntryForm.status === 'absent' || manualEntryForm.status === 'excused') && !manualEntryForm.notes)
+              (!verifiedUser &&
+                (!manualEntryForm.campus ||
+                  !manualEntryForm.department ||
+                  !manualEntryForm.course)) ||
+              ((manualEntryForm.status === 'absent' || manualEntryForm.status === 'excused') &&
+                !manualEntryForm.notes)
             }
             className='bg-success hover:bg-success/90'
           >
@@ -713,7 +811,14 @@ export function ManualEntryModal({
 }
 
 // Verify modal remains simple
-export function VerifyAttendanceModal({ open, onOpenChange, notes, onNotesChange, onConfirm, loading }) {
+export function VerifyAttendanceModal({
+  open,
+  onOpenChange,
+  notes,
+  onNotesChange,
+  onConfirm,
+  loading,
+}) {
   return (
     <Modal title='Verify Attendance' open={open} onOpenChange={onOpenChange}>
       <div className='space-y-4'>

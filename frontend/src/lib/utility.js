@@ -107,6 +107,112 @@ export function compare(a, b, direction = 'asc') {
   return 0;
 }
 
+/**
+ * Safely handle redirect parameters to prevent infinite loops
+ * @param {string} redirectParam - The redirect parameter from URL
+ * @param {string} fallbackPath - Fallback path if redirect is malformed
+ * @returns {string} Safe redirect path
+ */
+export function sanitizeRedirect(redirectParam, fallbackPath = '/dashboard') {
+  if (!redirectParam) return fallbackPath;
+
+  try {
+    // First level of decoding
+    let decoded = decodeURIComponent(redirectParam);
+
+    // Handle potential multiple encodings that might happen with GitHub Pages
+    let safetyCounter = 0;
+    while (decoded.includes('%2F') && safetyCounter < 5) {
+      decoded = decodeURIComponent(decoded);
+      safetyCounter++;
+    }
+
+    // Prevent redirect loops by checking for redirect parameters
+    if (
+      decoded.includes('redirect=') ||
+      decoded.includes('%3Fredirect%3D') ||
+      decoded.includes('%2Fredirect%2F') ||
+      decoded.includes('redirect%3D')
+    ) {
+      return fallbackPath;
+    }
+
+    // Extract just the path part if there are query parameters
+    if (decoded.includes('?')) {
+      decoded = decoded.split('?')[0];
+    }
+
+    // Ensure it's a valid path (starts with /)
+    if (!decoded.startsWith('/')) {
+      return fallbackPath;
+    }
+
+    // Prevent very long URLs that might indicate parameter accumulation
+    if (decoded.length > 100) {
+      return fallbackPath;
+    }
+
+    // Clean up any duplicate slashes
+    decoded = decoded.replace(/\/+/g, '/');
+
+    // Remove trailing slash for consistent routing
+    if (decoded !== '/' && decoded.endsWith('/')) {
+      decoded = decoded.slice(0, -1);
+    }
+
+    return decoded;
+  } catch {
+    return fallbackPath;
+  }
+}
+
+/**
+ * Create a clean redirect parameter without causing loops
+ * @param {string} currentPath - Current path to redirect to
+ * @returns {string} Encoded redirect parameter
+ */
+export function createRedirectParam(currentPath) {
+  if (!currentPath) {
+    return encodeURIComponent('/dashboard');
+  }
+
+  try {
+    // Create a clean path without any query parameters
+    let cleanPath = currentPath;
+
+    // If current path already has redirect params, extract just the base path
+    if (currentPath.includes('redirect=')) {
+      try {
+        const url = new URL(currentPath, window.location.origin);
+        cleanPath = url.pathname;
+      } catch {
+        cleanPath = '/dashboard';
+      }
+    } else if (currentPath.includes('?')) {
+      // If the path contains query parameters, remove them
+      try {
+        const url = new URL(currentPath, window.location.origin);
+        cleanPath = url.pathname;
+      } catch {
+        cleanPath = '/dashboard';
+      }
+    }
+
+    // Clean up any duplicate slashes
+    cleanPath = cleanPath.replace(/\/+/g, '/');
+
+    // Remove trailing slash for consistent routing
+    if (cleanPath !== '/' && cleanPath.endsWith('/')) {
+      cleanPath = cleanPath.slice(0, -1);
+    }
+
+    // Only encode the path, no query parameters
+    return encodeURIComponent(cleanPath);
+  } catch {
+    return encodeURIComponent('/dashboard');
+  }
+}
+
 export default {
   debounce,
   throttle,
@@ -117,4 +223,6 @@ export default {
   haversineDistance,
   paginate,
   compare,
+  sanitizeRedirect,
+  createRedirectParam,
 };

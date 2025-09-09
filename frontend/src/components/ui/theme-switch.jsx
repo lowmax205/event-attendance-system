@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import DevLogger from '@/lib/dev-logger';
 import { cn } from '@/lib/utils';
 
 export function ThemeSwitch({
@@ -12,7 +13,7 @@ export function ThemeSwitch({
 }) {
   // Filter out non-DOM props so they don't get forwarded to the underlying button element
   const { showInactiveIcons: _showInactiveIcons, ...restProps } = props;
-  console.log(_showInactiveIcons);
+  DevLogger.info('ThemeSwitch', 'showInactiveIcons prop', _showInactiveIcons);
   const getStoredMode = () => localStorage.getItem('themeMode') || 'system';
   const prefersDark = () =>
     window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;

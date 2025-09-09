@@ -5,31 +5,6 @@
     <link rel="icon" type="image/svg+xml" href="/EAS.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EAS - Event Attendance System</title>
-    <script>
-      (function(){
-        try {
-          const stored = localStorage.getItem('theme');
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          const theme = stored || (prefersDark ? 'dark' : 'light');
-          if (theme === 'dark') document.documentElement.classList.add('dark');
-        } catch (e) {}
-      })();
-    </script>
-    <script>
-      // GitHub Pages SPA redirect handler: if we were redirected from 404.html
-      // with a ?redirect=... param, restore the original path for the router.
-      (function () {
-        try {
-          var params = new URLSearchParams(window.location.search);
-          var redirect = params.get('redirect');
-          if (redirect) {
-            var target = decodeURIComponent(redirect);
-            // Remove the redirect param from the URL and replace with original path
-            window.history.replaceState(null, '', target);
-          }
-        } catch (e) { /* noop */ }
-      })();
-    </script>
   </head>
   <body>
     <div id="root"></div>

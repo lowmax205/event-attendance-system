@@ -1,7 +1,22 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from '@/components/ui/pagination';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from '@/components/ui/pagination';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 // Contract: generic card + table + client-side pagination
 // Props:
@@ -11,7 +26,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 // - renderRow: (row) => ReactNode (should return <TableRow>)
 // - page: number, totalPages: number, onPageChange: (n) => void
 // - footerExtra?: ReactNode
-export default function PaginatedTable({ title, columns, rows, renderRow, page, totalPages, onPageChange, footerExtra }) {
+export default function PaginatedTable({
+  title,
+  columns,
+  rows,
+  renderRow,
+  page,
+  totalPages,
+  onPageChange,
+  footerExtra,
+}) {
   return (
     <Card>
       <CardHeader>
@@ -84,7 +108,9 @@ export default function PaginatedTable({ title, columns, rows, renderRow, page, 
                 <PaginationItem>
                   <PaginationNext
                     onClick={() => onPageChange(Math.min(totalPages, page + 1))}
-                    className={page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    className={
+                      page === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                    }
                   />
                 </PaginationItem>
               </PaginationContent>

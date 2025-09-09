@@ -89,10 +89,11 @@ export default defineConfig(({ mode }) => {
     },
     esbuild: { jsx: 'automatic' },
     server: {
-      port: 5000,
+      port: 3000,
       open: false,
       host: '0.0.0.0',
       cors: true,
+      https: false,
       proxy: {
         '/api': {
           target: env.VITE_API_BASE_URL || null,
@@ -101,6 +102,10 @@ export default defineConfig(({ mode }) => {
           followRedirects: true,
         },
       },
+    },
+    preview: {
+      port: 4173,
+      https: false,
     },
   };
 });

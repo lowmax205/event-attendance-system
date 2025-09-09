@@ -125,9 +125,7 @@ export function Dashboard() {
         <div className='mb-4'>
           <Alert variant='destructive'>
             <WifiOff className='h-4 w-4' />
-            <AlertDescription>
-              Failed to load your profile: {profileError}
-            </AlertDescription>
+            <AlertDescription>Failed to load your profile: {profileError}</AlertDescription>
           </Alert>
         </div>
       )}

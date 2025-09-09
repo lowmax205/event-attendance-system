@@ -417,7 +417,7 @@ export const NavBar = () => {
         title='Session expired!'
         onAction={() => setSessionExpiredOpen(false)}
       >
-        <p className='text-sm text-muted-foreground'>Please sign in again to continue.</p>
+        <p className='text-muted-foreground text-sm'>Please sign in again to continue.</p>
       </InfoModal>
     </nav>
   );

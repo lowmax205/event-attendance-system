@@ -78,13 +78,16 @@ const AdminStats = () => {
       // First, trigger backend metrics recalculation
       const recalculateResponse = await apiService.recalculateMetrics();
       if (recalculateResponse?.message) {
-        DevLogger.info('AdminDashboard', 'recalculateMetrics', { message: recalculateResponse.message });
+        DevLogger.info('AdminDashboard', 'recalculateMetrics', {
+          message: recalculateResponse.message,
+        });
       }
 
       // Then fetch the updated metrics
       await fetchMetrics(false); // Don't set refreshing again since we're already handling it
     } catch (err) {
-      const msg = err?.response?.data?.error || err?.message || 'Failed to refresh dashboard metrics';
+      const msg =
+        err?.response?.data?.error || err?.message || 'Failed to refresh dashboard metrics';
       setError(msg);
       DevLogger.error('AdminDashboard', 'handleRefresh', err);
     } finally {
@@ -282,39 +285,45 @@ export function AdminDashboard() {
 
         <TabsContent value='overview' className='space-y-4'>
           <AdminStats />
-          
-      {/* Features development (below tabs) */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Features development</CardTitle>
-          <CardDescription>Planned additions for the admin dashboard overview</CardDescription>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='text-muted-foreground space-y-3'>
-            <p className='font-medium'>Features in development:</p>
-            <ul className='space-y-2 text-sm'>
-              <li>
-                • <strong>Real-time Metrics:</strong> Auto-refreshing tiles with live system and usage data
-              </li>
-              <li>
-                • <strong>Quick Actions:</strong> One-click access to user management, event approvals, and audits
-              </li>
-              <li>
-                • <strong>Health Indicators:</strong> Surface API latency, DB status, and background jobs summary
-              </li>
-              <li>
-                • <strong>Role Insights:</strong> At-a-glance counts by role, active sessions, and recent signups
-              </li>
-              <li>
-                • <strong>Export & Reports:</strong> Download system-wide summaries as CSV/PDF for compliance
-              </li>
-            </ul>
-            <p className='border-t pt-4 text-xs'>
-              This section highlights upcoming visibility and control tools tailored for administrators.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+
+          {/* Features development (below tabs) */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Features development</CardTitle>
+              <CardDescription>Planned additions for the admin dashboard overview</CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-4'>
+              <div className='text-muted-foreground space-y-3'>
+                <p className='font-medium'>Features in development:</p>
+                <ul className='space-y-2 text-sm'>
+                  <li>
+                    • <strong>Real-time Metrics:</strong> Auto-refreshing tiles with live system and
+                    usage data
+                  </li>
+                  <li>
+                    • <strong>Quick Actions:</strong> One-click access to user management, event
+                    approvals, and audits
+                  </li>
+                  <li>
+                    • <strong>Health Indicators:</strong> Surface API latency, DB status, and
+                    background jobs summary
+                  </li>
+                  <li>
+                    • <strong>Role Insights:</strong> At-a-glance counts by role, active sessions,
+                    and recent signups
+                  </li>
+                  <li>
+                    • <strong>Export & Reports:</strong> Download system-wide summaries as CSV/PDF
+                    for compliance
+                  </li>
+                </ul>
+                <p className='border-t pt-4 text-xs'>
+                  This section highlights upcoming visibility and control tools tailored for
+                  administrators.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value='users' className='space-y-4'>

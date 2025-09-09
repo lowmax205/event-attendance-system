@@ -104,7 +104,7 @@ const UserManagement = () => {
       await apiService.createUser(userData);
       setIsCreateModalOpen(false);
       resetForm();
-  await refreshUsers();
+      await refreshUsers();
       toast.success('User created successfully!', {
         description: 'The new user account has been created and is now active.',
       });
@@ -136,7 +136,7 @@ const UserManagement = () => {
       await apiService.updateUser(selectedUser.id, userData);
       setIsEditModalOpen(false);
       resetForm();
-  await refreshUsers();
+      await refreshUsers();
       toast.update('User updated successfully!', {
         description: 'User information has been updated in the system.',
       });
@@ -160,7 +160,7 @@ const UserManagement = () => {
       await apiService.deleteUser(selectedUser.id);
       setIsDeleteModalOpen(false);
       setSelectedUser(null);
-  await refreshUsers();
+      await refreshUsers();
       toast.delete('User deleted successfully!', {
         description: 'The user account has been permanently removed from the system.',
       });
@@ -293,7 +293,10 @@ const UserManagement = () => {
   }, [users]);
 
   // Pagination logic
-  const paginatedUsers = useMemo(() => paginate(filteredUsers, currentPage, itemsPerPage), [filteredUsers, currentPage, itemsPerPage]);
+  const paginatedUsers = useMemo(
+    () => paginate(filteredUsers, currentPage, itemsPerPage),
+    [filteredUsers, currentPage, itemsPerPage],
+  );
 
   const totalPages = calcTotalPages(filteredUsers.length, itemsPerPage);
 

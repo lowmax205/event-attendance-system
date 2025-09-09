@@ -30,7 +30,12 @@ import { useManagementData } from '@/contexts/management-data-context';
 import { useManualEntry } from '@/contexts/manual-entry-context';
 import DevLogger from '@/lib/dev-logger';
 import { parseDateTimeLocal, datetimeLocalToUTC, utcToDatetimeLocal } from '@/lib/formatting';
-import { paginate, totalPages as calcTotalPages, sortByDate, compare } from '@/lib/management-helpers';
+import {
+  paginate,
+  totalPages as calcTotalPages,
+  sortByDate,
+  compare,
+} from '@/lib/management-helpers';
 import {
   ViewEventModal,
   CreateEventModal,
@@ -177,10 +182,13 @@ const EventManagement = () => {
 
       DevLogger.info('Management', 'EventTab:create:request', { title: eventData.title });
       const response = await apiService.createEvent(eventData);
-      DevLogger.success('Management', 'EventTab:create:success', { id: response?.id, title: response?.title });
+      DevLogger.success('Management', 'EventTab:create:success', {
+        id: response?.id,
+        title: response?.title,
+      });
       setIsCreateModalOpen(false);
       resetForm();
-  await refreshEvents();
+      await refreshEvents();
       toast.success('Event created successfully!', {
         description: 'Your event has been created and is now available for registration.',
       });
@@ -256,7 +264,7 @@ const EventManagement = () => {
       await apiService.updateEvent(selectedEvent.id, eventData);
       setIsEditModalOpen(false);
       resetForm();
-  await refreshEvents();
+      await refreshEvents();
       toast.update('Event updated successfully!', {
         description: 'All changes have been saved and applied.',
       });
@@ -287,7 +295,7 @@ const EventManagement = () => {
       DevLogger.success('Management', 'EventTab:delete:success', { id: selectedEvent.id });
       setIsDeleteModalOpen(false);
       setSelectedEvent(null);
-  await refreshEvents();
+      await refreshEvents();
       toast.delete('Event deleted successfully!', {
         description: 'The event and all associated records have been permanently removed.',
       });
@@ -612,7 +620,9 @@ const EventManagement = () => {
         return sortByDate(list, sortField, sortDirection);
       }
       if (sortField === 'title') {
-        return [...list].sort((a, b) => compare(a.title?.toLowerCase() || '', b.title?.toLowerCase() || '', sortDirection));
+        return [...list].sort((a, b) =>
+          compare(a.title?.toLowerCase() || '', b.title?.toLowerCase() || '', sortDirection),
+        );
       }
       return sortByDate(list, 'created_at', sortDirection);
     },
@@ -756,7 +766,10 @@ const EventManagement = () => {
   }, [events]);
 
   // Pagination logic
-  const paginatedEvents = useMemo(() => paginate(filteredEvents, currentPage, itemsPerPage), [filteredEvents, currentPage, itemsPerPage]);
+  const paginatedEvents = useMemo(
+    () => paginate(filteredEvents, currentPage, itemsPerPage),
+    [filteredEvents, currentPage, itemsPerPage],
+  );
 
   const totalPages = calcTotalPages(filteredEvents.length, itemsPerPage);
 

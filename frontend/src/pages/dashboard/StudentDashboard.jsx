@@ -1,4 +1,14 @@
-import { AlertCircle, Calendar, CheckCircle, Clock, Eye, MapPin, Star, TrendingUp, Users } from 'lucide-react';
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Eye,
+  MapPin,
+  Star,
+  TrendingUp,
+  Users,
+} from 'lucide-react';
 import React from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +19,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDashboardData } from '@/contexts/dashboard-data-context';
 
 const StudentStats = () => {
-  const { attendances, events, attendancesLoading, eventsLoading, attendancesError, eventsError } = useDashboardData();
+  const { attendances, events, attendancesLoading, eventsLoading, attendancesError, eventsError } =
+    useDashboardData();
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [metrics, setMetrics] = React.useState({
@@ -24,7 +35,7 @@ const StudentStats = () => {
     // Derive student metrics from shared datasets
     setLoading(attendancesLoading || eventsLoading);
     const err = attendancesError || eventsError;
-    setError(err ? (err || 'Failed to load metrics') : '');
+    setError(err ? err || 'Failed to load metrics' : '');
 
     // ===== FRONTEND INTERACTION =====
     // Compute metrics from context data
@@ -34,7 +45,8 @@ const StudentStats = () => {
       ['checked_in', 'checked_out', 'present'].includes(String(r.status || '').toLowerCase()),
     ).length;
     const totalRecords = records.length;
-    const attendanceRate = totalRecords > 0 ? Math.round((attendedCount / totalRecords) * 100) : null;
+    const attendanceRate =
+      totalRecords > 0 ? Math.round((attendedCount / totalRecords) * 100) : null;
 
     const now = new Date();
     const upcoming = evts.filter((e) => {
@@ -161,7 +173,10 @@ const UpcomingEvents = () => {
         {!loading && !error && (
           <div className='space-y-4'>
             {events.map((event) => (
-              <div key={event.id} className='flex items-start justify-between rounded-lg border p-4'>
+              <div
+                key={event.id}
+                className='flex items-start justify-between rounded-lg border p-4'
+              >
                 <div className='flex-1'>
                   <div className='mb-2 flex items-center gap-2'>
                     <h4 className='font-medium'>{event.title}</h4>
@@ -250,25 +265,34 @@ const AttendanceHistory = () => {
                         : 'bg-blue-100 text-blue-600'
                     }`}
                   >
-                    {(rec.status === 'checked_in' || rec.status === 'checked_out') ? (
+                    {rec.status === 'checked_in' || rec.status === 'checked_out' ? (
                       <CheckCircle className='h-4 w-4' />
                     ) : (
                       <AlertCircle className='h-4 w-4' />
                     )}
                   </div>
                   <div>
-                    <p className='text-sm font-medium'>{rec.event_title || `Event #${rec.event}`}</p>
+                    <p className='text-sm font-medium'>
+                      {rec.event_title || `Event #${rec.event}`}
+                    </p>
                     <p className='text-muted-foreground text-xs'>
                       {/* Prefer checkin_time; fall back to created_at */}
-                      {(rec.checkin_time || rec.created_at || '').toString().replace('T', ' ').slice(0, 16)}
+                      {(rec.checkin_time || rec.created_at || '')
+                        .toString()
+                        .replace('T', ' ')
+                        .slice(0, 16)}
                     </p>
                   </div>
                 </div>
                 <div className='flex items-center gap-2'>
                   <Badge variant='outline'>{rec.method || 'N/A'}</Badge>
-                  <Badge variant={
-                    (rec.status === 'checked_in' || rec.status === 'checked_out') ? 'default' : 'secondary'
-                  }>
+                  <Badge
+                    variant={
+                      rec.status === 'checked_in' || rec.status === 'checked_out'
+                        ? 'default'
+                        : 'secondary'
+                    }
+                  >
                     {rec.status}
                   </Badge>
                 </div>
@@ -341,8 +365,6 @@ export function StudentDashboard() {
             </Card>
           </div>
         </TabsContent>
-
-        
       </Tabs>
 
       {/* Features development (below tabs) */}
@@ -356,7 +378,8 @@ export function StudentDashboard() {
             <p className='font-medium'>Features in development:</p>
             <ul className='space-y-2 text-sm'>
               <li>
-                • <strong>Personalized Feed:</strong> Recommended events based on interests and history
+                • <strong>Personalized Feed:</strong> Recommended events based on interests and
+                history
               </li>
               <li>
                 • <strong>Attendance Tools:</strong> Clear check-in guidance, QR help, and reminders
@@ -365,7 +388,8 @@ export function StudentDashboard() {
                 • <strong>Certificates:</strong> Downloadable proofs for completed attendance hours
               </li>
               <li>
-                • <strong>Goals & Progress:</strong> Set targets and visualize milestones by category
+                • <strong>Goals & Progress:</strong> Set targets and visualize milestones by
+                category
               </li>
               <li>
                 • <strong>Saved Events:</strong> Bookmark and receive updates for events of interest

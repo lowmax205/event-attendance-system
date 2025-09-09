@@ -1,20 +1,30 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <meta http-equiv="refresh" content="0; url=./" />
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Redirecting…</title>
+    <meta name="robots" content="noindex" />
     <script>
-      // Single Page App GitHub Pages redirect to the site root preserving path
       (function () {
+        // Build the path + query + hash the user tried to access
         var l = window.location;
-        // Compute repo base path if present: /<user>.github.io/<repo>/...
-        var parts = l.pathname.split('/').filter(Boolean);
-        var basePath = parts.length > 0 ? '/' + parts[0] + '/' : '/';
-        var target = basePath + '?redirect=' + encodeURIComponent(l.pathname + l.search + l.hash);
-        l.replace(target);
+        var path = l.pathname || '/';
+        var search = l.search || '';
+        var hash = l.hash || '';
+        var full = path + search + hash;
+
+        // Redirect to the SPA entry with a redirect param
+        var dest = '/?redirect=' + encodeURIComponent(full);
+        // Replace so back button behaves
+        l.replace(dest);
       })();
     </script>
+    <noscript>
+      <meta http-equiv="refresh" content="0; url=/?redirect=%2F" />
+    </noscript>
   </head>
-  <body>Redirecting…</body>
+  <body>
+    Redirecting…
+  </body>
 </html>

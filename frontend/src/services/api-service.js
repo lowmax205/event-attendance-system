@@ -277,28 +277,62 @@ class ApiService {
 
   // Mapbox token retrieval (env first, then backend). Caches result in-memory.
   async getMapboxToken() {
+    // Return cached token if available
     if (this._mapboxToken) return this._mapboxToken;
 
-    const envToken =
-      import.meta.env.VITE_MAPBOX_TOKEN && String(import.meta.env.VITE_MAPBOX_TOKEN).trim();
-    if (envToken) {
-      this._mapboxToken = envToken;
-      return envToken;
-    }
-
+    // Backend API only
     try {
       await this.ensureBaseURL();
-      if (!this.baseURL) return null;
+      if (!this.baseURL) {
+        DevLogger.warn('apiService', 'mapboxToken:noBaseUrl', 'No API base URL configured');
+        return null;
+      }
+
+      // Add authentication headers if user is logged in
+      const headers = this.getAuthHeaders();
+
       const res = await this._fetchWithTimeout(
         `${this.baseURL}/core/config/mapbox/`,
-        { credentials: 'include' },
+        {
+          credentials: 'include',
+          headers,
+        },
         4000,
       );
-      if (!res || !res.ok) return null;
+
+      if (!res) {
+        DevLogger.warn(
+          'apiService',
+          'mapboxToken:noResponse',
+          'No response from Mapbox token endpoint',
+        );
+        return null;
+      }
+
+      if (!res.ok) {
+        DevLogger.warn(
+          'apiService',
+          'mapboxToken:badResponse',
+          `HTTP ${res.status}: ${res.statusText}`,
+        );
+        return null;
+      }
+
       const data = await res.json();
       const token = (data && data.token) || null;
-      if (token) this._mapboxToken = token;
-      return token;
+
+      if (token) {
+        this._mapboxToken = token;
+        DevLogger.info(
+          'apiService',
+          'mapboxToken:fromApi',
+          'Successfully retrieved Mapbox token from API',
+        );
+        return token;
+      } else {
+        DevLogger.warn('apiService', 'mapboxToken:emptyToken', 'API returned empty Mapbox token');
+        return null;
+      }
     } catch (e) {
       DevLogger.warn('apiService', 'mapboxToken:failed', e && e.message ? e.message : e);
       return null;

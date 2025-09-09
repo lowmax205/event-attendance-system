@@ -18,6 +18,8 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import DevLogger from '@/lib/dev-logger';
+import { sanitizeRedirect } from '@/lib/utility';
 import apiService from '@/services/api-service';
 
 const yearLevels = [
@@ -49,6 +51,7 @@ export default function BasicInfoTab() {
     email: '',
     is_verified: false,
     role: '',
+    last_login: null,
   });
   const [form, setForm] = React.useState({
     bio: '',
@@ -66,7 +69,7 @@ export default function BasicInfoTab() {
 
   // Helper function to safely unwrap API responses
   const unwrapApiResponse = React.useCallback((response) => {
-    console.log('Unwrapping response:', response);
+    DevLogger.info('BasicInfoTab', 'Unwrapping response', response);
 
     // If response is null/undefined, return empty array
     if (!response) return [];
@@ -119,7 +122,9 @@ export default function BasicInfoTab() {
 
   const parseYMDToDate = React.useCallback((ymd) => {
     if (!ymd) return undefined;
-    const [y, m, d] = String(ymd).split('-').map((v) => parseInt(v, 10));
+    const [y, m, d] = String(ymd)
+      .split('-')
+      .map((v) => parseInt(v, 10));
     if (!y || !m || !d) return undefined;
     return new Date(y, m - 1, d);
   }, []);
@@ -146,7 +151,7 @@ export default function BasicInfoTab() {
           apiService.getCourses().catch(() => []),
         ]);
 
-        console.log('API Responses:', {
+        DevLogger.info('BasicInfoTab', 'API Responses', {
           userRes,
           profileRes,
           campusesRes,
@@ -154,8 +159,8 @@ export default function BasicInfoTab() {
           coursesRes,
         });
 
-  // Process user information (apiService already returns plain data)
-  const userData = userRes || {};
+        // Process user information (apiService already returns plain data)
+        const userData = userRes || {};
         setUserInfo({
           full_name:
             userData.full_name ||
@@ -164,10 +169,11 @@ export default function BasicInfoTab() {
           email: userData.email || 'N/A',
           is_verified: userData.is_verified || false,
           role: userData.role || 'student',
+          last_login: userData.last_login || null,
         });
 
-  // Process profile information (plain data)
-  const profileData = profileRes || {};
+        // Process profile information (plain data)
+        const profileData = profileRes || {};
         setForm({
           bio: profileData.bio || '',
           phone_number: profileData.phone_number || '',
@@ -202,7 +208,10 @@ export default function BasicInfoTab() {
               newForm.campus &&
               !campusData.some((c) => String(c.id) === String(newForm.campus))
             ) {
-              console.warn('Invalid campus in profile data, resetting academic info');
+              DevLogger.warn(
+                'BasicInfoTab',
+                'Invalid campus in profile data, resetting academic info',
+              );
               newForm.campus = '';
               newForm.department = '';
               newForm.course = '';
@@ -215,7 +224,10 @@ export default function BasicInfoTab() {
                 (d) => String(d.campus) === String(newForm.campus),
               );
               if (!validDepartments.some((d) => String(d.id) === String(newForm.department))) {
-                console.warn('Invalid department for campus, resetting department and course');
+                DevLogger.warn(
+                  'BasicInfoTab',
+                  'Invalid department for campus, resetting department and course',
+                );
                 newForm.department = '';
                 newForm.course = '';
                 changed = true;
@@ -228,7 +240,7 @@ export default function BasicInfoTab() {
                 (c) => String(c.department) === String(newForm.department),
               );
               if (!validCourses.some((c) => String(c.id) === String(newForm.course))) {
-                console.warn('Invalid course for department, resetting course');
+                DevLogger.warn('BasicInfoTab', 'Invalid course for department, resetting course');
                 newForm.course = '';
                 changed = true;
               }
@@ -238,7 +250,7 @@ export default function BasicInfoTab() {
           });
         }, 100); // Small delay to ensure state has been set
       } catch (err) {
-        console.error('Failed to load profile data:', err);
+        DevLogger.error('BasicInfoTab', 'Failed to load profile data', err);
         setError('Failed to load profile data. Please refresh the page.');
       } finally {
         setLoading(false);
@@ -266,7 +278,10 @@ export default function BasicInfoTab() {
     if (form.department && filteredDepartments.length > 0) {
       const stillValid = filteredDepartments.some((d) => String(d.id) === String(form.department));
       if (!stillValid) {
-        console.log('Department no longer valid for campus, resetting department and course');
+        DevLogger.info(
+          'BasicInfoTab',
+          'Department no longer valid for campus, resetting department and course',
+        );
         setForm((f) => ({ ...f, department: '', course: '' }));
       }
     }
@@ -276,7 +291,7 @@ export default function BasicInfoTab() {
     if (form.course && filteredCourses.length > 0) {
       const stillValid = filteredCourses.some((c) => String(c.id) === String(form.course));
       if (!stillValid) {
-        console.log('Course no longer valid for department, resetting course');
+        DevLogger.info('BasicInfoTab', 'Course no longer valid for department, resetting course');
         setForm((f) => ({ ...f, course: '' }));
       }
     }
@@ -293,10 +308,9 @@ export default function BasicInfoTab() {
         const numValue = parseInt(value, 10);
         const exists = items.some((item) => item.id === numValue);
         if (!exists) {
-          console.warn(
-            `Invalid ${name} ID: ${numValue}, available IDs:`,
-            items.map((i) => i.id),
-          );
+          DevLogger.warn('BasicInfoTab', `Invalid ${name} ID: ${numValue}`, {
+            availableIds: items.map((i) => i.id),
+          });
           return null;
         }
         return numValue;
@@ -340,17 +354,19 @@ export default function BasicInfoTab() {
         }
       });
 
-      console.log('Sending payload:', payload);
-      console.log(
-        'Available departments for campus:',
+      DevLogger.info('BasicInfoTab', 'Sending payload', payload);
+      DevLogger.info(
+        'BasicInfoTab',
+        'Available departments for campus',
         filteredDepartments.map((d) => ({ id: d.id, name: d.name })),
       );
-      console.log(
-        'Available courses for department:',
+      DevLogger.info(
+        'BasicInfoTab',
+        'Available courses for department',
         filteredCourses.map((c) => ({ id: c.id, name: c.name })),
       );
       const res = await apiService.updateProfile(payload);
-      console.log('Update response:', res);
+      DevLogger.info('BasicInfoTab', 'Update response', res);
 
       const isSuccess = res?.success !== false && !res?.error;
       if (!isSuccess) {
@@ -366,24 +382,28 @@ export default function BasicInfoTab() {
       try {
         const params = new URLSearchParams(location.search);
         const redirect = params.get('redirect');
-        if (redirect) {
-          // Small timeout to let the success alert render momentarily
+        if (redirect && redirect !== location.pathname) {
+          // Only redirect if it's different from current path to prevent loops
           setTimeout(() => {
-            navigate(decodeURIComponent(redirect), { replace: true });
+            const safeRedirect = sanitizeRedirect(redirect, '/dashboard');
+            // Additional check to prevent redirecting to self
+            if (safeRedirect !== location.pathname) {
+              navigate(safeRedirect, { replace: true });
+            }
           }, 400);
         }
       } catch {
         // ignore navigation errors
       }
     } catch (e) {
-      console.error('Update error:', e);
+      DevLogger.error('BasicInfoTab', 'Update error', e);
 
       // Extract detailed error information
       let errorMessage = 'Update failed';
 
       if (e?.response?.data) {
         const errorData = e.response.data;
-        console.log('Error data:', errorData);
+        DevLogger.info('BasicInfoTab', 'Error data', errorData);
 
         if (errorData.details) {
           // Format validation errors
@@ -470,11 +490,20 @@ export default function BasicInfoTab() {
               </div>
             </div>
             <div>
+              <Label className='text-muted-foreground text-sm font-medium'>Last Login</Label>
+              <p className='text-sm'>
+                {userInfo.last_login ? new Date(userInfo.last_login).toLocaleString() : 'Never'}
+              </p>
+            </div>
+            <div>
               <Label className='text-muted-foreground text-sm font-medium'>Date of Birth</Label>
               {isEditingAccount ? (
                 <Popover open={dobPopoverOpen} onOpenChange={setDobPopoverOpen}>
                   <PopoverTrigger asChild>
-                    <Button variant='outline' className='w-full justify-start text-left font-normal'>
+                    <Button
+                      variant='outline'
+                      className='w-full justify-start text-left font-normal'
+                    >
                       <CalendarIcon className='mr-2 h-4 w-4' />
                       {form.date_of_birth ? (
                         (() => {
@@ -512,7 +541,11 @@ export default function BasicInfoTab() {
                         >
                           Clear
                         </Button>
-                        <Button size='sm' variant='secondary' onClick={() => setDobPopoverOpen(false)}>
+                        <Button
+                          size='sm'
+                          variant='secondary'
+                          onClick={() => setDobPopoverOpen(false)}
+                        >
                           Done
                         </Button>
                       </div>

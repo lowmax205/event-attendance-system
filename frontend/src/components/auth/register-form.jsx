@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { FieldWithIcon, PasswordField } from './shared-components';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { createRedirectParam } from '@/lib/utility';
 import apiService from '@/services/api-service';
 
 export function RegisterForm({ onSuccess, setTab }) {
@@ -123,7 +124,8 @@ export function RegisterForm({ onSuccess, setTab }) {
           setSuccess('Account created! Redirecting to profile...');
           // Compute return path to resume flow (e.g., attendance verification URL)
           const current = `${window.location.pathname}${window.location.search || ''}`;
-          const redirectParam = encodeURIComponent(current);
+          const redirectParam = createRedirectParam(current);
+
           // Navigate to profile with redirect back to current page
           setTimeout(() => {
             onSuccess?.();
@@ -170,14 +172,14 @@ export function RegisterForm({ onSuccess, setTab }) {
       <div className='grid gap-4 md:grid-cols-2'>
         <FieldWithIcon
           id='reg-middle-name'
-          label='Middle Name (optional)'
+          label='Middle Name'
           icon={User}
           value={registerForm.middle_name}
           onChange={(v) => setRegisterForm((f) => ({ ...f, middle_name: v }))}
         />
         <FieldWithIcon
           id='reg-username'
-          label='Username (optional)'
+          label='Username'
           icon={User}
           value={registerForm.username}
           onChange={(v) => setRegisterForm((f) => ({ ...f, username: v }))}

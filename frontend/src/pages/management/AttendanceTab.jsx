@@ -32,7 +32,12 @@ import { toast } from '@/components/ui/toast';
 import { useManagementData } from '@/contexts/management-data-context';
 import { useManualEntry } from '@/contexts/manual-entry-context';
 import DevLogger from '@/lib/dev-logger';
-import { paginate, totalPages as calcTotalPages, compare, sortByDate } from '@/lib/management-helpers';
+import {
+  paginate,
+  totalPages as calcTotalPages,
+  compare,
+  sortByDate,
+} from '@/lib/management-helpers';
 import {
   ViewAttendanceModal,
   EvidenceModal,
@@ -93,13 +98,7 @@ const AttendanceManagement = () => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
 
   // Shared datasets from context (avoids duplicate fetching across tabs)
-  const {
-    events,
-    campuses,
-    departments,
-    courses,
-    users,
-  } = useManagementData();
+  const { events, campuses, departments, courses, users } = useManagementData();
 
   // Form validation state
   const [validationErrors, setValidationErrors] = useState([]);
@@ -480,7 +479,13 @@ const AttendanceManagement = () => {
         });
       }
       if (sortField === 'event_title') {
-        return [...records].sort((a, b) => compare((a.event?.title || a.event_title || '').toLowerCase(), (b.event?.title || b.event_title || '').toLowerCase(), sortDirection));
+        return [...records].sort((a, b) =>
+          compare(
+            (a.event?.title || a.event_title || '').toLowerCase(),
+            (b.event?.title || b.event_title || '').toLowerCase(),
+            sortDirection,
+          ),
+        );
       }
       if (sortField === 'status') {
         return [...records].sort((a, b) => compare(a.status || '', b.status || '', sortDirection));
@@ -547,9 +552,15 @@ const AttendanceManagement = () => {
   }, [attendanceRecords]);
 
   // Pagination logic
-  const paginatedRecords = useMemo(() => paginate(filteredRecords, currentPage, itemsPerPage), [filteredRecords, currentPage, itemsPerPage]);
+  const paginatedRecords = useMemo(
+    () => paginate(filteredRecords, currentPage, itemsPerPage),
+    [filteredRecords, currentPage, itemsPerPage],
+  );
 
-  const totalPages = useMemo(() => calcTotalPages(filteredRecords.length, itemsPerPage), [filteredRecords.length, itemsPerPage]);
+  const totalPages = useMemo(
+    () => calcTotalPages(filteredRecords.length, itemsPerPage),
+    [filteredRecords.length, itemsPerPage],
+  );
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -653,7 +664,9 @@ const AttendanceManagement = () => {
       DevLogger.error('Management', 'AttendanceTab:export:error', error);
       const errorMessage =
         error?.response?.data?.detail || error?.message || 'Unknown error occurred';
-      toast.error('Failed to export attendance data', { description: `${errorMessage}. Please try again.` });
+      toast.error('Failed to export attendance data', {
+        description: `${errorMessage}. Please try again.`,
+      });
     } finally {
       setExportLoading(false);
     }
