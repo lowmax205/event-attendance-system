@@ -1,4 +1,4 @@
-import { IconCirclePlusFilled, IconMail } from '@tabler/icons-react';
+import { PlusCircle, Mail } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ export function NavMain({ items }) {
               tooltip='Quick Create'
               className='bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear'
             >
-              <IconCirclePlusFilled />
+              <PlusCircle />
               <span>Quick Create</span>
             </SidebarMenuButton>
             <Button
@@ -36,7 +36,7 @@ export function NavMain({ items }) {
               className='size-8 group-data-[collapsible=icon]:opacity-0'
               variant='outline'
             >
-              <IconMail />
+              <Mail />
               <span className='sr-only'>Inbox</span>
             </Button>
           </SidebarMenuItem>
