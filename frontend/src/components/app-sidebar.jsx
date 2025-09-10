@@ -1,11 +1,11 @@
 import {
-  IconChartBar,
-  IconDashboard,
-  IconHelp,
-  IconReport,
-  IconSettings,
-  IconAdjustments,
-} from '@tabler/icons-react';
+  BarChart3,
+  Gauge,
+  HelpCircle,
+  FileChartColumn,
+  Settings,
+  SlidersHorizontal,
+} from 'lucide-react';
 import * as React from 'react';
 
 import { NavDocuments } from '@/components/nav-documents';
@@ -20,19 +20,19 @@ const data = {
     {
       title: 'Dashboard',
       url: '/dashboard',
-      icon: IconDashboard,
+      icon: Gauge,
       roles: ['admin', 'organizer', 'student'], // Available to all
     },
     {
       title: 'Management',
       url: '/management',
-      icon: IconAdjustments,
+      icon: SlidersHorizontal,
       roles: ['admin', 'organizer'], // Restricted
     },
     {
       title: 'Analytics',
       url: '/analytics',
-      icon: IconChartBar,
+      icon: BarChart3,
       roles: ['admin', 'organizer'], // Restricted
     },
   ],
@@ -40,13 +40,13 @@ const data = {
     {
       title: 'Settings',
       url: '/settings',
-      icon: IconSettings,
+      icon: Settings,
       roles: ['admin', 'organizer'], // Restricted
     },
     {
       title: 'Get Help',
       url: '/help',
-      icon: IconHelp,
+      icon: HelpCircle,
       roles: ['admin', 'organizer', 'student'], // Available to all
     },
   ],
@@ -60,7 +60,7 @@ const data = {
     {
       name: 'Reports',
       url: '/reports',
-      icon: IconReport,
+      icon: FileChartColumn,
       roles: ['admin', 'organizer', 'student'], // Available to all
     },
   ],

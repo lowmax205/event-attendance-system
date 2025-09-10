@@ -1,8 +1,19 @@
 import USCLogo from '@assets/icons/USC-Logo2.png';
 import SNSULogo from '@assets/images/SNSU-Logo.png';
 import { useAuth } from '@contexts/auth-context';
-import { IconLogout, IconUser } from '@tabler/icons-react';
-import { Home, CalendarDays, Map, Menu, X, Sun, Moon, Laptop, Bell } from 'lucide-react';
+import {
+  Home,
+  CalendarDays,
+  Map,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  Laptop,
+  Bell,
+  User,
+  LogOut,
+} from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthDialog from '@/components/auth/auth-dialog';
@@ -28,17 +39,19 @@ const navItems = [
 
 const ThemeSwitchIcon = () => {
   return (
-    <ThemeSwitch
-      variant='icon-click'
-      modes={['light', 'dark', 'system']}
-      icons={[
-        <Sun key='sun-icon' size={16} />,
-        <Moon key='moon-icon' size={16} />,
-        <Laptop key='laptop-icon' size={16} />,
-      ]}
-      showInactiveIcons='all'
-      size='sm'
-    />
+    <div className='cursor-pointer'>
+      <ThemeSwitch
+        variant='icon-click'
+        modes={['light', 'dark', 'system']}
+        icons={[
+          <Sun key='sun-icon' size={16} />,
+          <Moon key='moon-icon' size={16} />,
+          <Laptop key='laptop-icon' size={16} />,
+        ]}
+        showInactiveIcons='all'
+        size='sm'
+      />
+    </div>
   );
 };
 
@@ -124,12 +137,17 @@ export const NavBar = () => {
     setOpen(false);
   }, [location.pathname]);
 
-  // Listen for global session-expired event and prompt re-login
+  // Listen for global session-expired event and redirect home (do not auto-open login modal)
   useEffect(() => {
     const onExpired = () => {
+      // Close any open auth modal and show a brief info modal
+      setAuthOpen(false);
+      setForceAuth(false);
       setSessionExpiredOpen(true);
-      setAuthOpen(true);
-      setForceAuth(true);
+      // Redirect to home page; QR page will manage its own forced login
+      if (location.pathname !== '/') {
+        navigate('/', { replace: true });
+      }
     };
     window.addEventListener('eas:session-expired', onExpired);
     // Also listen for a global auth-success to close any open auth modal
@@ -192,7 +210,7 @@ export const NavBar = () => {
               key={item.to}
               asChild
               variant={active ? 'secondary' : 'ghost'}
-              size='sm'
+              size='lg'
               className={`px-3 ${active ? 'shadow-sm' : ''}`}
             >
               <Link to={item.to} className='flex items-center gap-1'>
@@ -209,7 +227,7 @@ export const NavBar = () => {
               variant='outline'
               size='sm'
               aria-label='Notifications'
-              className='border-secondary/30 hover:border-secondary/50 hover:bg-background/30 hover:text-background bg-card/80 dark:border-primary/30 dark:hover:border-primary/50 dark:hover:bg-foreground/30 dark:hover:text-foreground dark:bg-card/80 p-5'
+              className='border-secondary/30 hover:border-secondary/50 hover:bg-background/30 hover:text-background bg-card/80 dark:border-primary/30 dark:hover:border-primary/50 dark:hover:bg-foreground/30 dark:hover:text-foreground dark:bg-card/80 cursor-pointer p-5'
             >
               <Bell className='h-4 w-4 transition-colors' />
             </Button>
@@ -218,7 +236,7 @@ export const NavBar = () => {
                 <Button
                   variant='outline'
                   size='sm'
-                  className='border-secondary/30 hover:border-secondary/50 hover:bg-background/30 hover:text-background bg-card/80 dark:border-primary/30 dark:hover:border-primary/50 dark:hover:bg-foreground/30 dark:hover:text-foreground dark:bg-card/80 p-5'
+                  className='border-secondary/30 hover:border-secondary/50 hover:bg-background/30 hover:text-background bg-card/80 dark:border-primary/30 dark:hover:border-primary/50 dark:hover:bg-foreground/30 dark:hover:text-foreground dark:bg-card/80 cursor-pointer p-5'
                 >
                   <Avatar className='border-primary/20 dark:border-primary/30 h-7 w-7 rounded-lg border-2'>
                     <AvatarImage src={user?.avatar} alt={getUserDisplayName(user)} />
@@ -243,21 +261,21 @@ export const NavBar = () => {
                     location.pathname === '/roadmap') && (
                     <DropdownMenuItem asChild>
                       <Link to='/dashboard' className='flex items-center gap-2'>
-                        <IconUser className='size-4' />
+                        <User className='size-4' />
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem asChild>
                     <Link to='/profile' onClick={ensureAuth()} className='flex items-center gap-2'>
-                      <IconUser className='size-4' />
+                      <User className='size-4' />
                       Profile
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
-                  <IconLogout className='size-4' />
+                  <LogOut className='size-4' />
                   Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -266,7 +284,7 @@ export const NavBar = () => {
         ) : (
           <Button
             size='lg'
-            className='bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-primary/20 dark:bg-primary dark:hover:bg-primary/80 px-4 shadow-sm transition-all duration-200 focus:ring-2 focus:outline-none'
+            className='bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-primary/20 dark:bg-primary dark:hover:bg-primary/80 cursor-pointer px-4 shadow-sm transition-all duration-200 focus:ring-2 focus:outline-none'
             onClick={() => setAuthOpen(true)}
           >
             Login
@@ -283,7 +301,7 @@ export const NavBar = () => {
               variant='outline'
               size='sm'
               aria-label='Notifications'
-              className='border-secondary/30 hover:border-secondary/50 hover:bg-background/30 hover:text-background bg-card/80 dark:border-primary/30 dark:hover:border-primary/50 dark:hover:bg-foreground/30 dark:hover:text-foreground dark:bg-card/80 p-5'
+              className='border-secondary/30 hover:border-secondary/50 hover:bg-background/30 hover:text-background bg-card/80 dark:border-primary/30 dark:hover:border-primary/50 dark:hover:bg-foreground/30 dark:hover:text-foreground dark:bg-card/80 cursor-pointer p-5'
             >
               <Bell className='h-4 w-4 transition-colors' />
             </Button>
@@ -292,7 +310,7 @@ export const NavBar = () => {
                 <Button
                   variant='outline'
                   size='sm'
-                  className='border-secondary/30 hover:border-secondary/50 hover:bg-background/30 hover:text-background bg-card/80 dark:border-primary/30 dark:hover:border-primary/50 dark:hover:bg-foreground/30 dark:hover:text-foreground dark:bg-card/80 p-5'
+                  className='border-secondary/30 hover:border-secondary/50 hover:bg-background/30 hover:text-background bg-card/80 dark:border-primary/30 dark:hover:border-primary/50 dark:hover:bg-foreground/30 dark:hover:text-foreground dark:bg-card/80 cursor-pointer p-5'
                 >
                   <Avatar className='border-primary/20 dark:border-primary/30 h-6 w-6 rounded-lg border'>
                     <AvatarImage src={user?.avatar} alt={getUserDisplayName(user)} />
@@ -329,21 +347,21 @@ export const NavBar = () => {
                     location.pathname === '/roadmap') && (
                     <DropdownMenuItem asChild>
                       <Link to='/dashboard' className='flex items-center gap-2'>
-                        <IconUser className='size-4' />
+                        <User className='size-4' />
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem asChild>
                     <Link to='/profile' onClick={ensureAuth()} className='flex items-center gap-2'>
-                      <IconUser className='size-4' />
+                      <User className='size-4' />
                       Profile
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
-                  <IconLogout className='size-4' />
+                  <LogOut className='size-4' />
                   Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -352,7 +370,7 @@ export const NavBar = () => {
         ) : (
           <Button
             size='lg'
-            className='bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-primary/20 dark:bg-primary dark:hover:bg-primary/80 px-4 shadow-sm transition-all duration-200 focus:ring-2 focus:outline-none'
+            className='bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-primary/20 dark:bg-primary dark:hover:bg-primary/80 cursor-pointer px-4 shadow-sm transition-all duration-200 focus:ring-2 focus:outline-none'
             onClick={() => setAuthOpen(true)}
           >
             Login

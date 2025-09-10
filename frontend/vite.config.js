@@ -66,7 +66,7 @@ export default defineConfig(({ mode }) => {
               'zod',
             ],
             'vendor-charts': ['recharts'],
-            'vendor-icons': ['lucide-react', '@tabler/icons-react'],
+            'vendor-icons': ['lucide-react'],
             'vendor-maps': ['mapbox-gl'],
             'vendor-misc': [
               'qrcode',
