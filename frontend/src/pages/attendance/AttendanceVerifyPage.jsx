@@ -90,13 +90,33 @@ const AttendanceVerifyPage = () => {
     }
   }, []);
 
-  const query = useQuery();
   const { isAuthenticated, isLoading: authLoading, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const eventId = useMemo(() => Number(query.get('eventId') || 0), [query]);
-  const expParam = useMemo(() => query.get('exp'), [query]);
+  // Robust param parsing: read from router first, then window.location as fallback (avoids
+  // transient empty query on initial render in some production builds)
+  const getParam = useCallback(
+    (name) => {
+      try {
+        const s1 = location?.search || '';
+        const s2 = typeof window !== 'undefined' ? window.location.search || '' : '';
+        const v1 = new URLSearchParams(s1).get(name);
+        if (v1 != null) return v1;
+        return new URLSearchParams(s2).get(name);
+      } catch {
+        return null;
+      }
+    },
+    [location.search],
+  );
+
+  const eventId = useMemo(() => {
+    const idStr = getParam('eventId');
+    const idNum = Number(idStr);
+    return Number.isFinite(idNum) && idNum > 0 ? idNum : 0;
+  }, [getParam]);
+  const expParam = useMemo(() => getParam('exp'), [getParam]);
 
   const [initError, setInitError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -924,7 +944,6 @@ const AttendanceVerifyPage = () => {
           open={true}
           onOpenChange={() => {}}
           forced={true}
-          showDemoAccounts={false}
           onAuthSuccess={() => {
             // After login, the page will re-render and proceed
           }}
