@@ -288,14 +288,11 @@ class ApiService {
         return null;
       }
 
-      // Add authentication headers if user is logged in
-      const headers = this.getAuthHeaders();
-
       const res = await this._fetchWithTimeout(
         `${this.baseURL}/core/config/mapbox/`,
         {
-          credentials: 'include',
-          headers,
+          // Intentionally avoid sending credentials or Authorization header
+          // so the request remains a simple CORS GET without preflight
         },
         4000,
       );
